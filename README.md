@@ -6,6 +6,7 @@ Install prism (can be downloaded here: [PRISM Website](http://www.prismmodelchec
 `
 
 Download [grappa](http://www2.research.att.com/~john/Grappa/grappa.tgz) (for prettyprinting), and copy the jar into the `lib` folder.
+Install [JUppaal](https://github.com/ksluckow/JUppaal) (for translation to TA), and copy the jar into the `lib` folder.
 
 Then, in the root directory of Model-inferencer, install it:
 ```
