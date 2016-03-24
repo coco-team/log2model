@@ -9,14 +9,12 @@ Download [grappa](http://www2.research.att.com/~john/Grappa/grappa.tgz) (for pre
 Install [JUppaal](https://github.com/ksluckow/JUppaal) (for translation to TA), and copy the jar into the `lib` folder.
 
 Then, in the root directory of Model-inferencer, install it:
-```
-#!bash
+```bash
 $ gradle build
 ```
 
 You can also get a fat jar with all dependencies:
-```
-#!bash
+```bash
 $ gradle fatjar
 ```
 
@@ -25,8 +23,7 @@ You have to build the fatjar in order to use the supplied wrapper scripts (`log2
 ## Usage 
 
 `log2model` can be interfaced from the command line. Execute
-```
-#!bash
+```bash
 $ ./log2model
 ```
 for usage. 
@@ -34,8 +31,7 @@ for usage.
 
 ## Additional Tools
 You can also invoke the charting tool in a similar fashioner. Just execute:
-```
-#!bash
+```bash
 $ ./log2chart
 ```
 
