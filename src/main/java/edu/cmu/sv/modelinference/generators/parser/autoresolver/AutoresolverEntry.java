@@ -22,12 +22,112 @@ import edu.cmu.sv.modelinference.generators.LogEntry;
  */
 public class AutoresolverEntry extends LogEntry {
 
-  public AutoresolverEntry(double logTime) {
+  private final String flightName;
+  private final double altitude, altitudeRateFpm, 
+                       fuelWeight, groundSpeed, 
+                       heading, indicatedSpeed, 
+                       latDegrees, lonDegrees, 
+                       trueAirspeed, trueCourse; 
+  
+  public AutoresolverEntry(double logTime, String flightName, 
+                           double altitude, double altitudeRateFpm, 
+                           double fuelWeight, double groundSpeed, 
+                           double heading, double indicatedSpeed, 
+                           double latDegrees, double lonDegrees, 
+                           double trueAirspeed, double trueCourse) {
     super(logTime);
+    this.flightName = flightName;
+    this.altitude = altitude;
+    this.altitudeRateFpm = altitudeRateFpm;
+    this.fuelWeight = fuelWeight;
+    this.groundSpeed = groundSpeed;
+    this.heading = heading;
+    this.indicatedSpeed = indicatedSpeed;
+    this.latDegrees = latDegrees;
+    this.lonDegrees = lonDegrees;
+    this.trueAirspeed = trueAirspeed;
+    this.trueCourse = trueCourse;
+  }
+
+  /**
+   * @return the flightName
+   */
+  public String getFlightName() {
+    return flightName;
+  }
+
+  /**
+   * @return the altitude
+   */
+  public double getAltitude() {
+    return altitude;
+  }
+
+  /**
+   * @return the altitudeRateFpm
+   */
+  public double getAltitudeRateFpm() {
+    return altitudeRateFpm;
+  }
+
+  /**
+   * @return the fuelWeight
+   */
+  public double getFuelWeight() {
+    return fuelWeight;
+  }
+
+  /**
+   * @return the groundSpeed
+   */
+  public double getGroundSpeed() {
+    return groundSpeed;
+  }
+
+  /**
+   * @return the heading
+   */
+  public double getHeading() {
+    return heading;
+  }
+
+  /**
+   * @return the indicatedSpeed
+   */
+  public double getIndicatedSpeed() {
+    return indicatedSpeed;
+  }
+
+  /**
+   * @return the latDegrees
+   */
+  public double getLatDegrees() {
+    return latDegrees;
+  }
+
+  /**
+   * @return the lonDegrees
+   */
+  public double getLonDegrees() {
+    return lonDegrees;
+  }
+
+  /**
+   * @return the trueAirspeed
+   */
+  public double getTrueAirspeed() {
+    return trueAirspeed;
+  }
+
+  /**
+   * @return the trueCourse
+   */
+  public double getTrueCourse() {
+    return trueCourse;
   }
 
   @Override
   public String getLogProducerId() {
-    return "";
+    return this.flightName;
   }
 }

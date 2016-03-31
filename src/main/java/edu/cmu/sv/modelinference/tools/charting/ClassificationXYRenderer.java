@@ -42,47 +42,31 @@ import edu.cmu.sv.modelinference.features.classification.EventClass;
 public class ClassificationXYRenderer extends XYLineAndShapeRenderer {
   
   private static final long serialVersionUID = 155589501163174854L;
-  
-  //ugly
-  private static Color[] COLORS = {Color.GREEN, Color.RED, Color.BLACK, Color.BLUE, Color.GRAY, Color.CYAN, Color.DARK_GRAY, Color.MAGENTA}; 
-  
+
   private final ClassificationResult clusterResults;
-  private static final Random rng = new Random();
   
-  private Map<String, Color> clusterId2Color = new HashMap<>();
-  private RangeMap<Integer, String> eventRanges2ClusterId = TreeRangeMap.create();
+  private Map<EventClass, Color> cluster2Color;
+  private RangeMap<Integer, EventClass> eventRanges2ClusterId = TreeRangeMap.create();
   
-  public ClassificationXYRenderer(ClassificationResult clusterResults) {
+  public ClassificationXYRenderer(ClassificationResult clusterResults, Map<EventClass, Color> cluster2Color) {
     this.clusterResults = clusterResults;
-    assignClusterColors(this.clusterResults);
+    this.cluster2Color = cluster2Color;
     populateIndex(this.clusterResults);
   }
 
   private void populateIndex(ClassificationResult results) {
     for(EventClass cl : results.getEventClasses()) {
       for(Event evt : cl.getEvents()) {
-        eventRanges2ClusterId.put(evt.getRange(), cl.getClassId());
+        eventRanges2ClusterId.put(evt.getRange(), cl);
       }
-    }
-  }
-  
-  private void assignClusterColors(ClassificationResult results) {
-    int colorIdx = 0;
-    int usedColors = 0;
-    for(EventClass cl : results.getEventClasses()) {
-      if(usedColors >= COLORS.length) {
-        colorIdx = rng.nextInt(COLORS.length);
-      }
-      clusterId2Color.put(cl.getClassId(), COLORS[colorIdx++]);
-      usedColors++;
     }
   }
   
   @Override
   public Paint getItemPaint(int row, int col) {
-    String clusterId = eventRanges2ClusterId.get(col + 10);
-    if(clusterId != null) {
-      return clusterId2Color.get(clusterId);
+    EventClass cluster = eventRanges2ClusterId.get(col + 10); //FIXME: check why we have to set an offset here
+    if(cluster != null) {
+      return cluster2Color.get(cluster);
     } else 
       return super.getItemPaint(row, col);
   }

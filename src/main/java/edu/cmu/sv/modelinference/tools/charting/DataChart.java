@@ -51,8 +51,8 @@ class DataChart extends ApplicationFrame {
     super("Timeseries");
   }
   
-  public JFreeChart chart(XYSeriesCollection dataCollection, String yLabel) {
-    JFreeChart chart = createChart(dataCollection, yLabel);
+  public JFreeChart chart(String yLabel) {
+    JFreeChart chart = createChart(yLabel);
     createChartPanel(chart);
     return chart;
   }
@@ -100,17 +100,13 @@ class DataChart extends ApplicationFrame {
     setContentPane(chartPanel);
   }
 
-  private JFreeChart createChart(XYDataset dataset, String yLabel) {
+  private JFreeChart createChart(String yLabel) {
     //Create the chart
     final JFreeChart chart = ChartFactory.createXYLineChart(
         "Chart",
         "Time",
         yLabel,
-        dataset,
-        PlotOrientation.VERTICAL,
-        true,                     
-        true,                     
-        false
+        null
         );
 
     chart.setBackgroundPaint(Color.white);

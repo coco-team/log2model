@@ -25,18 +25,23 @@ public class AutoresolverParser implements LogParser<AutoresolverEntry> {
 
   @Override
   public AutoresolverEntry parse(String raw) throws ParserException {
-    String[] entry = raw.split("\\s+");
-    if(entry.length != 11) //Not a valid entry (e.g. newline)
+    String[] entry = raw.split(",");
+    if(entry.length != 12) //Not a valid entry (e.g. newline)
       throw new ParserException("Invalid entry length");
     try {      
-      double time = Float.valueOf(entry[0]);
-
-      /*
-       * blabla the rest goes here
-       */
-
-      return new AutoresolverEntry(time);
-      
+      double time = Double.valueOf(entry[0]);
+      String flightName = entry[1];
+      double altitude = Double.valueOf(entry[2]);
+      double altitudeRateFpm = Double.valueOf(entry[3]);
+      double fuelWeight = Double.valueOf(entry[4]);
+      double groundSpeed = Double.valueOf(entry[5]);
+      double heading = Double.valueOf(entry[6]);
+      double indicatedSpeed = Double.valueOf(entry[7]);
+      double latDegrees = Double.valueOf(entry[8]);
+      double lonDegrees = Double.valueOf(entry[9]);
+      double trueAirspeed = Double.valueOf(entry[10]);
+      double trueCourse = Double.valueOf(entry[11]);
+      return new AutoresolverEntry(time, flightName, altitude, altitudeRateFpm, fuelWeight, groundSpeed, heading, indicatedSpeed, latDegrees, lonDegrees, trueAirspeed, trueCourse);      
     } catch (NumberFormatException e) { // Not a valid entry
       throw new ParserException(e);
     }

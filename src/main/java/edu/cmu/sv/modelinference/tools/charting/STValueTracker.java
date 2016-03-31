@@ -15,21 +15,55 @@
  */
 package edu.cmu.sv.modelinference.tools.charting;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
-import edu.cmu.sv.modelinference.generators.LogProcessor;
+import edu.cmu.sv.modelinference.generators.DataSetFactory;
+import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
 import edu.cmu.sv.modelinference.generators.parser.reader.LogReader;
-import edu.cmu.sv.modelinference.generators.parser.st.Coord3d;
 import edu.cmu.sv.modelinference.generators.parser.st.STEntry;
 
-public class STValueTracker implements LogProcessor<STEntry> {
+public abstract class STValueTracker<S> extends ValueTrackerProducer<STEntry, S, Double> {
+  
+  public static class STValueSeriesGenerator extends STValueTracker<XYSeries> {
+    private static final DataSetFactory<XYSeries> FACTORY = new DataSetFactory<XYSeries>() {
+      @Override
+      public XYSeries create(String producer) {
+        return new XYSeries(producer);
+      }
+    };
+    
+    public STValueSeriesGenerator(edu.cmu.sv.modelinference.tools.charting.STValueTracker.FIELD field,
+        LogReader<STEntry> logReader) {
+      super(field, logReader, FACTORY);
+    }
 
+    @Override
+    public void addToDataSet(XYSeries dataset, double time, Double data) {
+      dataset.add(time, data);
+    }
+  }
+  
+  public static class STDataPointsGenerator extends STValueTracker<List<DataPoint>> {
+    private static final DataSetFactory<List<DataPoint>> FACTORY = new DataSetFactory<List<DataPoint>>() {
+      @Override
+      public List<DataPoint> create(String producer) {
+        return new ArrayList<>();
+      }
+    };
+    
+    public STDataPointsGenerator(edu.cmu.sv.modelinference.tools.charting.STValueTracker.FIELD field,
+        LogReader<STEntry> logReader) {
+      super(field, logReader, FACTORY);
+    }
+
+    @Override
+    public void addToDataSet(List<DataPoint> dataset, double time, Double data) {
+      dataset.add(new DataPoint(time, data));
+    }
+  }
+  
   //This is really ugly -- should have a tighter connection to the entry
   //Currently only supports numeric types. It would be nice to also track string types e.g. AC_TYPE
   public static enum FIELD {
@@ -57,15 +91,11 @@ public class STValueTracker implements LogProcessor<STEntry> {
     }
   }
   
-  private Map<String, Map<FIELD, XYSeries>> field2callsign2series = new HashMap<>();
-  private final Set<FIELD> fields;
-  private final LogReader<STEntry> logReader;
+  private final FIELD field;
   
-  public STValueTracker(Set<FIELD> fields, LogReader<STEntry> logReader) {
-    this.fields = fields;
-    this.logReader = logReader;
-    
-    this.logReader.addLogProcessor(this);
+  public STValueTracker(FIELD field, LogReader<STEntry> logReader, DataSetFactory<S> dataFactory) {
+    super(logReader, dataFactory);
+    this.field = field;
   }
   
   private double getValue(STEntry entry, FIELD f) {
@@ -88,34 +118,8 @@ public class STValueTracker implements LogProcessor<STEntry> {
   }
 
   @Override
-  public void process(STEntry entry) {
-    double timestamp = entry.getLogTime();
-    Map<FIELD, XYSeries> f2xy = this.field2callsign2series.get(entry.getCallSign());
-    if(f2xy == null) {
-      f2xy = new HashMap<>();
-      this.field2callsign2series.put(entry.getCallSign(), f2xy);
-    }
-    for(FIELD f : fields) {
-      XYSeries ser = f2xy.get(f);
-      if(ser == null) {
-        ser = new XYSeries(f.id + "_" + entry.getCallSign());
-        f2xy.put(f, ser);
-      }
-      double val = getValue(entry, f);
-      ser.add(timestamp, val);
-    }
+  public Double getData(STEntry entry) {
+    double val = getValue(entry, field);
+    return val;
   }
-  
-  public XYSeriesCollection getSeries(String logFile) throws IOException {
-    this.logReader.parseLog(logFile);
-    
-    XYSeriesCollection col = new XYSeriesCollection();
-    for(Map<FIELD, XYSeries> f2s : this.field2callsign2series.values()) {
-      for(XYSeries ser : f2s.values()) {
-        col.addSeries(ser);        
-      }
-    }
-    return col;
-  }
-
 }

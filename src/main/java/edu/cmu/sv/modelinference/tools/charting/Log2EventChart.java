@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +36,10 @@ import org.apache.commons.cli.ParseException;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.UnknownKeyException;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
@@ -59,6 +63,7 @@ import edu.cmu.sv.modelinference.features.classification.EventClass;
 import edu.cmu.sv.modelinference.features.classification.EventClassifier;
 import edu.cmu.sv.modelinference.features.classification.EventUtils;
 import edu.cmu.sv.modelinference.generators.LogEntryFilter;
+import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
 import edu.cmu.sv.modelinference.generators.parser.reader.LogReader;
 import edu.cmu.sv.modelinference.generators.parser.reader.SequentialLogReader;
 import edu.cmu.sv.modelinference.generators.parser.st.STEntry;
@@ -112,24 +117,22 @@ public class Log2EventChart {
     
     long start = System.currentTimeMillis();
     
+    ValueTrackerProducer<?, List<DataPoint>, ?> valueExtractor = null;
+    
     //Expand this to be more pluggable. ugly
     switch(logType.toLowerCase()) {
     case "st":
-      
-      Set<STValueTracker.FIELD> trackedFields = new HashSet<>();
-      
-      if(cmd.hasOption(ADD_OPTS_ARG)) {
-        String fieldsStr = cmd.getOptionValue(ADD_OPTS_ARG);
-        for(String f : fieldsStr.split(",")) {
-          trackedFields.add(FIELD.valueOf(f.toUpperCase()));
-        }
-      } else {
+      FIELD trackedField =null;
+      try {
+        trackedField = FIELD.valueOf(cmd.getOptionValue(ADD_OPTS_ARG).toUpperCase());
+      } catch(Exception e) {
+        logger.error(e.getMessage());
         logger.error("Must be supplied a comma-separated list of fields to be tracked (e.g., pos_x,pos_y) to additional arg option");
         System.exit(-1);
       }
       
+      // Hardcoded atm :/
       LogEntryFilter<STEntry> filter =
-      
       new LogEntryFilter<STEntry>() {
         String tracked = "";
         @Override
@@ -143,106 +146,9 @@ public class Log2EventChart {
       };
       
       LogReader<STEntry> reader = new SequentialLogReader<>(new STParser(), filter);
-      STValueTracker valTracker = new STValueTracker(trackedFields, reader);
       
-      
-      //Compute all the series
-      XYSeriesCollection seriesCol = new XYSeriesCollection();
-      XYSeriesCollection rawCollection = valTracker.getSeries(logFilePath);
-      mergeSeries(rawCollection, seriesCol);
-      
-      //We'll just get the first series in the collection.. kind of arbitrary
-      XYSeries ser = (XYSeries) seriesCol.getSeries().get(0);
-      ser.toArray();
-      double[] xsd = ser.toArray()[0];
-      final int[] xs = new int[xsd.length];
-      for (int i=0; i<xs.length; ++i)
-          xs[i] = (int) xsd[i];
-      double[] ys = ser.toArray()[1];
-      
-      
-      //Get features
-      //Feature: raw data
-      UnweightedRectangularSmoothingFilter unweightedFilter = new UnweightedRectangularSmoothingFilter(3);
-      EWMASmoothingFilter ewmaFilter = new EWMASmoothingFilter(3, 0.1);
-      double[] unweightedYs = unweightedFilter.smoothen(xs, ys);
-      double[] ewmaYs = ewmaFilter.smoothen(xs, ys);
-
-      //Plot raw data
-   //   addDataToXYSeries(xs, ys, "data", seriesCol);
-      addDataToXYSeries(xs, unweightedYs, "data (EWMA smooth)", seriesCol);
-
-      //Feature: slope/rate-of-change
-      FeatureExtractor slopeExtractor = new RoCExtractor();
-      double[] ySlopeRaw = slopeExtractor.computeFeature(xs, ewmaYs);
-      double[] unweightedYSlope = unweightedFilter.smoothen(xs, ySlopeRaw);
-      double[] ewmaYSlope = ewmaFilter.smoothen(xs, ySlopeRaw);
-      
-      //Plot slopes
-     // addDataToXYSeries(xs, ySlopeRaw, "slope", seriesCol);
-      addDataToXYSeries(xs, ewmaYSlope, "slope (EWMA smooth)", seriesCol);
-      
-      
-      //use event detector on features
-      EventDetector movingAvg = new MovingAverageEventDetector(2, 3);
-      
-      //Get prediction model based on moving average on slope
-      PredictionModel predictionModelSlope = movingAvg.computePredictionModel(xs, ewmaYSlope);
-      XYSeriesCollection serSlopeCol = predictionModelSlope.getSeries();
-      mergeSeries(serSlopeCol, seriesCol);
-
-      //Find violations of prediction model
-      List<Range<Integer>> violations = predictionModelSlope.findThresholdViolations(xs, ewmaYSlope);
-      
-      
-      logger.info("Number of violations: " + violations.size());
-      logger.info("Points in raw xs: " + xs.length);
-      logger.info("Points in raw slope: " + ySlopeRaw.length);
-      logger.info("Points in eqmaYSlope: " + ewmaYSlope.length);
-      
-      List<Range<Integer>> eventIntervals = EventUtils.computeEventSequence(xs[0], xs[xs.length - 1], violations);
-      
-      List<Event> events = AvgFeature.computeAvgEvents(eventIntervals, ewmaYSlope);
-      logger.info("events computed: " + events.size());
-      
-      //Start clustering
-      EventClassifier clusterer = new Clusterer1D(7, -1, 3000);
-      ClassificationResult clusters = clusterer.classify(events);
-      logger.info("Number of clusters: " + clusters.getEventClasses().size());
-      Set<Map.Entry<Event, EventClass>> evtClassSequence = clusters.getEvtSeqWithClassifiers();
-      DecimalFormat df = new DecimalFormat("#.0000"); 
-      for(Map.Entry<Event, EventClass> evtWithClass : evtClassSequence) {
-        Range<Integer> evtPeriod = evtWithClass.getKey().getRange();
-        System.out.println(evtPeriod + " : class " + 
-            evtWithClass.getValue().getClassId() + 
-            " ([" + df.format(evtWithClass.getValue().getMinFeatureVal()) + ";" + df.format(evtWithClass.getValue().getMaxFeatureVal()) + "], " +
-            "avg: " + df.format(evtWithClass.getValue().getAvgFeatureVal()) + 
-            ", stddev: " + df.format(Math.sqrt(evtWithClass.getValue().getFeatureVariance())) + ")");
-      }
-      
-      //Chart clusters
-      DataChart clustersDataChart = new DataChart();      
-      clustersDataChart.chart(clusters.getSeries(), "avg rate");
-      clustersDataChart.pack();
-      RefineryUtilities.centerFrameOnScreen(clustersDataChart);
-      clustersDataChart.setVisible(true);
-      
-      //Get chart on which we will plot the features and violations
-      DataChart c = new DataChart();
-      String yLbl = trackedFields.iterator().next().getUnit(); // very random.....
-      JFreeChart chart = c.chart(seriesCol, yLbl);
-
-      //Plot violations
-      XYPlot plot = (XYPlot) chart.getPlot();
-      plot.setRenderer(new ClassificationXYRenderer(clusters));
-
-      setViolationMarkers(violations, plot);
-
-      c.pack();
-      RefineryUtilities.centerFrameOnScreen(c);
-      c.setVisible(true);
+      valueExtractor = new STValueTracker.STDataPointsGenerator(trackedField, reader);
       break;
-    case "sierra":
     case "autoresolver":
     case "rp":
       default:
@@ -250,8 +156,153 @@ public class Log2EventChart {
         printHelpAndExit(options);
     }
     
+    
+    Map<String, List<DataPoint>> data = valueExtractor.computeDataSet(logFilePath);
+    
+    //FIXME: for now we just take the first one -- later we can plot them all... 
+    assert(data.keySet().size() == 1);
+    String producer = data.keySet().iterator().next();
+    List<DataPoint> datapoints = data.get(producer);
+    performAnalysis(producer, datapoints);
+    
     logger.info("Done constructing chart");
-    logger.info("Took: " + (System.currentTimeMillis() - start));
+    logger.info("Processing time: " + (System.currentTimeMillis() - start));
+  }
+  
+  private static void performAnalysis(String producer, List<DataPoint> datapoints) {
+    //Compute all the series
+    DefaultXYDataset featureDataSet = new DefaultXYDataset();
+    DefaultXYDataset rawDataSet = new DefaultXYDataset();
+    
+    //super weird juggling around with those data structures... clean up.
+    XYSeries rawSeries = new XYSeries(producer);
+    int xs[] = new int[datapoints.size()];
+    double ys[] = new double[datapoints.size()];
+    int i = 0;
+    for(DataPoint d : datapoints) {
+      xs[i] = (int)d.x; //check this guy. Ain't good.
+      ys[i++] = d.y;
+      rawSeries.add(d.x, d.y);
+    }
+    
+    rawDataSet.addSeries(producer + "_raw", rawSeries.toArray());
+    
+    //Get features
+    //Feature: raw data
+    UnweightedRectangularSmoothingFilter unweightedFilter = new UnweightedRectangularSmoothingFilter(3);
+    EWMASmoothingFilter ewmaFilter = new EWMASmoothingFilter(3, 0.1);
+    double[] unweightedYs = unweightedFilter.smoothen(xs, ys);
+    double[] ewmaYs = ewmaFilter.smoothen(xs, ys);
+
+    //Plot raw data
+    //addDataToXYSeries(xs, ys, "data", seriesCol);
+    addDataToXYSeries(xs, unweightedYs, "data (EWMA smooth)", featureDataSet);
+
+    //Feature: slope/rate-of-change
+    FeatureExtractor slopeExtractor = new RoCExtractor();
+    double[] ySlopeRaw = slopeExtractor.computeFeature(xs, ewmaYs);
+    double[] unweightedYSlope = unweightedFilter.smoothen(xs, ySlopeRaw);
+    double[] ewmaYSlope = ewmaFilter.smoothen(xs, ySlopeRaw);
+    
+    //Plot slopes
+    // addDataToXYSeries(xs, ySlopeRaw, "slope", seriesCol);
+    addDataToXYSeries(xs, ewmaYSlope, "slope (EWMA smooth)", featureDataSet);
+    
+    
+    //use event detector on features
+    EventDetector movingAvg = new MovingAverageEventDetector(2, 3);
+    
+    //Get prediction model based on moving average on slope
+    PredictionModel predictionModelSlope = movingAvg.computePredictionModel(xs, ewmaYSlope);
+    XYSeriesCollection serSlopeCol = predictionModelSlope.getSeries();
+    XYSeriesCollection seriesCol = new XYSeriesCollection();//remove this guy when cleaning up
+    mergeSeries(serSlopeCol, seriesCol);
+
+    //Find violations of prediction model
+    List<Range<Integer>> violations = predictionModelSlope.findThresholdViolations(xs, ewmaYSlope);
+    
+    
+    logger.info("Number of violations: " + violations.size());
+    logger.info("Points in raw xs: " + xs.length);
+    logger.info("Points in raw slope: " + ySlopeRaw.length);
+    logger.info("Points in eqmaYSlope: " + ewmaYSlope.length);
+    
+    List<Range<Integer>> eventIntervals = EventUtils.computeEventSequence(xs[0], xs[xs.length - 1], violations);
+    
+    List<Event> events = AvgFeature.computeAvgEvents(eventIntervals, ewmaYSlope);
+    logger.info("events computed: " + events.size());
+    
+    //Start clustering
+    EventClassifier clusterer = new Clusterer1D(7, -1, 3000);
+    ClassificationResult clusters = clusterer.classify(events);
+    logger.info("Number of clusters: " + clusters.getEventClasses().size());
+    Set<Map.Entry<Event, EventClass>> evtClassSequence = clusters.getEvtSeqWithClassifiers();
+    DecimalFormat df = new DecimalFormat("#.0000"); 
+    for(Map.Entry<Event, EventClass> evtWithClass : evtClassSequence) {
+      Range<Integer> evtPeriod = evtWithClass.getKey().getRange();
+      logger.info(evtPeriod + " : class " + 
+          evtWithClass.getValue().getClassId() + 
+          " ([" + df.format(evtWithClass.getValue().getMinFeatureVal()) + ";" + df.format(evtWithClass.getValue().getMaxFeatureVal()) + "], " +
+          "avg: " + df.format(evtWithClass.getValue().getAvgFeatureVal()) + 
+          ", stddev: " + df.format(Math.sqrt(evtWithClass.getValue().getFeatureVariance())) + ")");
+    }
+    
+    Map<EventClass, Color> clusterColors = assignClusterColors(clusters);
+    
+    //Chart clusters
+    DataChart clustersDataChart = new DataChart();      
+    JFreeChart clusterChart = clustersDataChart.chart("avg rate");
+
+    XYPlot clusterPlot = clusterChart.getXYPlot();
+    int index = 0;
+    for(EventClass evtCl : clusters.getEventClasses()) {
+      DefaultXYDataset clusterDataSet = new DefaultXYDataset();
+      
+      //clean this up. It's stupid
+      XYSeries pl = new XYSeries(evtCl.getClassId());
+      for(Event data : evtCl.getEvents()) {
+        pl.add(0, data.getFeature().getData());
+      }
+      clusterPlot.setDataset(index, clusterDataSet);
+    }
+    
+    
+    clustersDataChart.pack();
+    RefineryUtilities.centerFrameOnScreen(clustersDataChart);
+    clustersDataChart.setVisible(true);
+    
+    //Get chart on which we will plot the features and violations
+    DataChart c = new DataChart();
+    JFreeChart chart = c.chart("");    
+
+    //Plot violations
+    XYPlot plot = chart.getXYPlot();
+
+    plot.setDataset(0, rawDataSet);
+    plot.setRenderer(0, new ClassificationXYRenderer(clusters, clusterColors));
+    
+    for(Object oSer : seriesCol.getSeries()) {
+      featureDataSet.addSeries(((XYSeries)oSer).getKey(), ((XYSeries)oSer).toArray());
+    }
+    plot.setDataset(1, featureDataSet);
+    plot.setRenderer(1, new XYLineAndShapeRenderer());
+
+    setViolationMarkers(violations, plot);
+
+    c.pack();
+    RefineryUtilities.centerFrameOnScreen(c);
+    c.setVisible(true);
+  }
+  
+  private static Map<EventClass, Color> assignClusterColors(ClassificationResult results) {
+    Color[] COLORS = {Color.GREEN, Color.RED, Color.BLACK, Color.BLUE, Color.GRAY, Color.CYAN, Color.DARK_GRAY, Color.MAGENTA}; 
+    int colorIdx = 0;
+    Map<EventClass, Color> cluster2Color = new HashMap<>();
+    for(EventClass cl : results.getEventClasses()) {
+      cluster2Color.put(cl, COLORS[colorIdx % COLORS.length]);
+      colorIdx++;
+    }
+    return cluster2Color;
   }
   
   private static void setViolationMarkers(Collection<Range<Integer>> violations, XYPlot plot) {
@@ -291,9 +342,9 @@ public class Log2EventChart {
     return series;
   }
   
-  private static void addDataToXYSeries(int[] xs, double[] ys, String name, XYSeriesCollection outputCol) {
+  private static void addDataToXYSeries(int[] xs, double[] ys, String name, DefaultXYDataset outputCol) {
     XYSeries series = computeSeries(xs,ys,name);
-    outputCol.addSeries(series);
+    outputCol.addSeries(name, series.toArray());
   }
   
   private static void printHelpAndExit(Options options) {
