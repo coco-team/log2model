@@ -39,7 +39,7 @@ import org.jfree.ui.RectangleEdge;
 /**
  * @author Kasper Luckow
  */
-class DataChart extends ApplicationFrame {
+public class DataChart extends ApplicationFrame {
 
   private static final long serialVersionUID = 7777887151534005094L;
 
@@ -47,8 +47,8 @@ class DataChart extends ApplicationFrame {
   private Crosshair yCrosshair;
   private ChartPanel chartPanel;
 
-  public DataChart() {
-    super("Timeseries");
+  public DataChart(String title) {
+    super(title);
   }
   
   public JFreeChart chart(String yLabel) {

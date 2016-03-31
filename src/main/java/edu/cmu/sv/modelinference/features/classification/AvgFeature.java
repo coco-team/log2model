@@ -24,20 +24,7 @@ import com.google.common.collect.Range;
  * @author Kasper Luckow
  *
  */
-public class AvgFeature implements Feature {
-
-  public static List<Event> computeAvgEvents(List<Range<Integer>> eventSequence, double[] ys) {
-    List<Event> avgForEvents = new ArrayList<>();
-    int idx = 0;
-    for(Range<Integer> event : eventSequence) {
-      double[] yData = new double[event.upperEndpoint() - event.lowerEndpoint()];
-      for(int i = 0, r = event.lowerEndpoint(); r < event.upperEndpoint(); r++, i++, idx++) {
-        yData[i] = ys[idx];
-      }
-      avgForEvents.add(new Event(event, new AvgFeature(yData)));
-    }    
-    return avgForEvents;
-  }
+public class AvgFeature implements EventFeature {
   
   private final double avg;
   
@@ -60,5 +47,10 @@ public class AvgFeature implements Feature {
   @Override
   public double getData() {
     return avg;
+  }
+  
+  @Override
+  public String toString() {
+    return "" + avg;
   }
 }

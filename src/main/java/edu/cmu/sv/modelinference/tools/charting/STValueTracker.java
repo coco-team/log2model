@@ -45,11 +45,11 @@ public abstract class STValueTracker<S> extends ValueTrackerProducer<STEntry, S,
     }
   }
   
-  public static class STDataPointsGenerator extends STValueTracker<List<DataPoint>> {
-    private static final DataSetFactory<List<DataPoint>> FACTORY = new DataSetFactory<List<DataPoint>>() {
+  public static class STDataPointsGenerator extends STValueTracker<DataPointCollection> {
+    private static final DataSetFactory<DataPointCollection> FACTORY = new DataSetFactory<DataPointCollection>() {
       @Override
-      public List<DataPoint> create(String producer) {
-        return new ArrayList<>();
+      public DataPointCollection create(String producer) {
+        return new DataPointCollection();
       }
     };
     
@@ -59,7 +59,7 @@ public abstract class STValueTracker<S> extends ValueTrackerProducer<STEntry, S,
     }
 
     @Override
-    public void addToDataSet(List<DataPoint> dataset, double time, Double data) {
+    public void addToDataSet(DataPointCollection dataset, double time, Double data) {
       dataset.add(new DataPoint(time, data));
     }
   }

@@ -36,7 +36,7 @@ public abstract class RectangularSmoothingFilter implements SmoothingFilter {
   }
   
   @Override
-  public double[] smoothen(int[] xs, double[] ys) {
+  public double[] smoothen(double[] xs, double[] ys) {
     LinkedList<Double> movingDataSet = new LinkedList<>();
     double[] movingAvg = new double[ys.length];
     for(int i = 0; i < ys.length; i++) {

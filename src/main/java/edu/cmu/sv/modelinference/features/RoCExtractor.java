@@ -32,7 +32,7 @@ public class RoCExtractor implements FeatureExtractor {
   }
   
   @Override
-  public double[] computeFeature(int[] xRaw, double[] yRaw) {
+  public double[] computeFeature(double[] xRaw, double[] yRaw) {
     double[] ySlope = new double[yRaw.length];
     
     for(int i = 0; i < yRaw.length; i++) {

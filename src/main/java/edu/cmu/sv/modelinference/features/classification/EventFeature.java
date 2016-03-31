@@ -15,38 +15,11 @@
  */
 package edu.cmu.sv.modelinference.features.classification;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.AbstractMap.SimpleEntry;
-
-import com.google.common.collect.Range;
-
 /**
  * @author Kasper Luckow
  *
  */
-public class Event {
-  private final Range<Integer> xRange;
-  private final EventFeature feat;
+public interface EventFeature {
   
-  public Event(Range<Integer> xRange, EventFeature feat) {
-    this.xRange = xRange;
-    this.feat = feat;
-  }
-  
-  public Range<Integer> getRange() {
-    return this.xRange;
-  }
-  
-  public EventFeature getFeature() {
-    return this.feat;
-  }
-  
-  @Override
-  public String toString() {
-    return xRange.toString() + ": " + feat.toString();
-  }
+  public double getData();
 }

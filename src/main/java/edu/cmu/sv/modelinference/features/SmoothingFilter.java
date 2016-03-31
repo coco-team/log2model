@@ -20,5 +20,5 @@ package edu.cmu.sv.modelinference.features;
  *
  */
 public interface SmoothingFilter {
-  public double[] smoothen(int[] xs, double[] ys);
+  public double[] smoothen(double[] xs, double[] ys);
 }

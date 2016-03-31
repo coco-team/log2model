@@ -20,5 +20,5 @@ package edu.cmu.sv.modelinference.features;
  *
  */
 public interface FeatureExtractor {
-  public double[] computeFeature(int xRaw[], double yRaw[]);
+  public double[] computeFeature(double xs[], double ys[]);
 }

@@ -48,6 +48,11 @@ public class Clusterer1D implements EventClassifier {
     public double[] getPoint() {
       return new double[] {0, event.getFeature().getData()};
     }
+    
+    @Override
+    public String toString() {
+      return "(0, " + event.getFeature().getData() + ")";
+    }
   }
 
   private final static int MAX_K_DEFAULT = 5;

@@ -31,15 +31,15 @@ public class EventUtils {
     return computeEventSequence(xs[0], xs[xs.length - 1], violations);
   }
   
-  public static List<Range<Integer>> computeEventSequence(int minX, int maxX, List<Range<Integer>> violations) {
+  public static List<Range<Integer>> computeEventSequence(double minX, double maxX, List<Range<Integer>> violations) {
     LinkedList<Range<Integer>> eventSequence = new LinkedList<>();
-    int begin = minX;
+    int begin = (int)minX;
     for(Range<Integer> violation : violations) {
       int endpoint = violation.lowerEndpoint();
       eventSequence.add(Range.closedOpen(begin, endpoint));
       begin = endpoint;      
     }
-    eventSequence.add(Range.closedOpen(begin, maxX));
+    eventSequence.add(Range.closedOpen(begin, (int)maxX));
     return eventSequence;
   }
 }

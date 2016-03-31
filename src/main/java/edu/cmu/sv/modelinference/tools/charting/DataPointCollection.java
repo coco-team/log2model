@@ -13,40 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.features.classification;
+package edu.cmu.sv.modelinference.tools.charting;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.AbstractMap.SimpleEntry;
-
-import com.google.common.collect.Range;
 
 /**
  * @author Kasper Luckow
  *
  */
-public class Event {
-  private final Range<Integer> xRange;
-  private final EventFeature feat;
+public class DataPointCollection extends ArrayList<DataPoint> {
+  private static final long serialVersionUID = 11241155232L;
   
-  public Event(Range<Integer> xRange, EventFeature feat) {
-    this.xRange = xRange;
-    this.feat = feat;
-  }
-  
-  public Range<Integer> getRange() {
-    return this.xRange;
-  }
-  
-  public EventFeature getFeature() {
-    return this.feat;
-  }
-  
-  @Override
-  public String toString() {
-    return xRange.toString() + ": " + feat.toString();
+  public double[][] toDataArray() {
+    double[][] data = new double[][] {new double[this.size()], new double[this.size()]};
+    int i = 0;
+    for(DataPoint d : this) {
+      data[0][i] = d.x;
+      data[1][i++] = d.y;
+    }
+    return data;
   }
 }

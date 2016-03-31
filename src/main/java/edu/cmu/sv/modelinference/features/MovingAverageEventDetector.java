@@ -51,7 +51,7 @@ public class MovingAverageEventDetector implements EventDetector {
   }
   
   @Override
-  public PredictionModel computePredictionModel(int[] xs, double[] ys) {
+  public PredictionModel computePredictionModel(double[] xs, double[] ys) {
     checkArgument(xs.length == ys.length);
     checkArgument(xs.length > 0);
     
@@ -68,8 +68,8 @@ public class MovingAverageEventDetector implements EventDetector {
       double stdDev = Math.sqrt(computeVariance(movingDataSet, mean));
       
       //+1 here for forecasting
-      upperThreshold.put(xs[i] + 1, mean + (stdDev * stdDevs));
-      lowerThreshold.put(xs[i] + 1, mean - (stdDev * stdDevs));
+      upperThreshold.put(((int)xs[i]) + 1, mean + (stdDev * stdDevs));
+      lowerThreshold.put(((int)xs[i]) + 1, mean - (stdDev * stdDevs));
     }
     
     return new PredictionModel(upperThreshold, lowerThreshold);

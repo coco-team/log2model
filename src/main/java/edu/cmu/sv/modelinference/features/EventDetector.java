@@ -20,5 +20,5 @@ package edu.cmu.sv.modelinference.features;
  *
  */
 public interface EventDetector {
-  public PredictionModel computePredictionModel(int xs[], double ys[]);
+  public PredictionModel computePredictionModel(double xs[], double ys[]);
 }

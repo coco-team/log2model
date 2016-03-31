@@ -17,13 +17,18 @@ package edu.cmu.sv.modelinference.features;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.util.Pair;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import com.google.common.collect.Range;
+
+import edu.cmu.sv.modelinference.tools.charting.DataPoint;
+import edu.cmu.sv.modelinference.tools.charting.DataPointCollection;
 
 /**
  * @author Kasper Luckow
@@ -51,34 +56,37 @@ public class PredictionModel {
       return false;
   }
   
-  public List<Range<Integer>> findThresholdViolations(int[] xs, double[] yObserved) {
+  public List<Range<Integer>> findThresholdViolations(double[] xs, double[] yObserved) {
     int maxPredictions = Math.min(xs.length, upperThreshold.size());
     LinkedList<Range<Integer>> violations = new LinkedList<>();
     boolean ongoingViolation = false;
     int violationStart = 0;
     for(int i = 1; i < maxPredictions; i++) {
-      if(!ongoingViolation && isViolation(xs[i], yObserved[i])) {
-        violationStart = xs[i];
+      double x = xs[i];
+      if(!ongoingViolation && isViolation((int)x, yObserved[i])) {
+        violationStart = (int)xs[i];
         ongoingViolation = true;
-      } else if(ongoingViolation && !isViolation(xs[i], yObserved[i])) {
-        violations.addLast(Range.closedOpen(violationStart, xs[i]));
+      } else if(ongoingViolation && !isViolation((int)x, yObserved[i])) {
+        violations.addLast(Range.closedOpen(violationStart, (int)x));
         ongoingViolation = false;
       } 
     }
     return violations;
   }
   
-  public XYSeriesCollection getSeries() {
-    XYSeriesCollection seriesCol = new XYSeriesCollection();
-    XYSeries upperAlarmSeries = new XYSeries("Upper threshold");
-    XYSeries lowerAlarmSeries = new XYSeries("Lower threshold");
-    
-    for(int key : upperThreshold.keySet()) {
-      upperAlarmSeries.add(key, upperThreshold.get(key));
-      lowerAlarmSeries.add(key, lowerThreshold.get(key));
+  public DataPointCollection getUpperThreshold() {
+    return computeThreshold(upperThreshold);
+  }
+  
+  public DataPointCollection getLowerThreshold() {
+    return computeThreshold(lowerThreshold);
+  }
+  
+  private static DataPointCollection computeThreshold(Map<Integer, Double> threshold) {
+    DataPointCollection dp = new DataPointCollection();
+    for(int key : threshold.keySet()) {
+      dp.add(new DataPoint(key, threshold.get(key)));
     }
-    seriesCol.addSeries(upperAlarmSeries);
-    seriesCol.addSeries(lowerAlarmSeries);
-    return seriesCol;
+    return dp;
   }
 }
