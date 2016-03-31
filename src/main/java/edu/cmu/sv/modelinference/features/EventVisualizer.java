@@ -42,6 +42,7 @@ import edu.cmu.sv.modelinference.features.classification.ClassificationResult;
 import edu.cmu.sv.modelinference.features.classification.Event;
 import edu.cmu.sv.modelinference.features.classification.EventClass;
 import edu.cmu.sv.modelinference.features.classification.EventClassifier;
+import edu.cmu.sv.modelinference.features.classification.EventUtils;
 import edu.cmu.sv.modelinference.tools.charting.ClassificationXYRenderer;
 import edu.cmu.sv.modelinference.tools.charting.DataChart;
 import edu.cmu.sv.modelinference.tools.charting.DataPointCollection;
@@ -142,26 +143,26 @@ public class EventVisualizer {
     featureDataSet.addSeries("Lower thres", lowerThreshold.toDataArray());    
 
     
-//    DataChart c = new DataChart("Featuresssssssssss chart");
-//    JFreeChart chart = c.chart("");    
-//
-//    //Plot violations
-//    XYPlot plot = chart.getXYPlot();
-//    plot.setDataset(0, featureDataSet);
-//    
-//    c.pack();
-//    RefineryUtilities.centerFrameOnScreen(c);
-//    c.setVisible(true);
-//    
-//    
+    DataChart c = new DataChart("Featuresssssssssss chart");
+    JFreeChart chart = c.chart("");    
+
+    //Plot violations
+    XYPlot plot = chart.getXYPlot();
+    plot.setDataset(0, featureDataSet);
+    
+    c.pack();
+    RefineryUtilities.centerFrameOnScreen(c);
+    c.setVisible(true);    
     
     List<Range<Integer>> violations = predictionModel.findThresholdViolations(rawXs, yFeat);
+    List<Range<Integer>> eventIntervals = EventUtils.computeEventSequence(rawXs[0], rawXs[rawXs.length - 1], violations);
+    
     
     logger.info("Number of violations: " + violations.size());
     logger.info("Points in raw xs: " + rawXs.length);
     logger.info("Points in feature: " + yFeat.length);
     
-    List<Event> events = eventGenerator.computeEvents(violations, yFeat);
+    List<Event> events = eventGenerator.computeEvents(eventIntervals, yFeat);
     logger.info("events computed: " + events.size());
 
     ClassificationResult classes = eventClassifier.classify(events);

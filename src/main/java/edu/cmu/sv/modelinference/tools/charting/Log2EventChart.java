@@ -177,7 +177,7 @@ public class Log2EventChart {
     FeatureExtractor slopeExtractor = new RoCExtractor();
     
     //use event detector on features
-    EventDetector movingAvg = new MovingAverageEventDetector(2, 10);
+    EventDetector movingAvg = new MovingAverageEventDetector(2, 3);
 
     EventGenerator eventGenerator = new AvgEventGenerator();
     
