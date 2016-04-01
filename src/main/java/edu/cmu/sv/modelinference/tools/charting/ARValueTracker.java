@@ -21,6 +21,7 @@ import java.util.List;
 import org.jfree.data.xy.XYSeries;
 import edu.cmu.sv.modelinference.generators.DataSetFactory;
 import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
+import edu.cmu.sv.modelinference.generators.parser.autoresolver.AutoresolverEntry;
 import edu.cmu.sv.modelinference.generators.parser.reader.LogReader;
 import edu.cmu.sv.modelinference.generators.parser.st.STEntry;
 
@@ -31,9 +32,9 @@ import edu.cmu.sv.modelinference.generators.parser.st.STEntry;
  * This class should be removed and made generic instead. Instead of a having a notion of "field" only for
  * ST, this should be generalized in which case we can use Data points generator for arbitrary log formats.
  */
-public abstract class STValueTracker<S> extends ValueTrackerProducer<STEntry, S, Double> {
+public abstract class ARValueTracker<S> extends ValueTrackerProducer<AutoresolverEntry, S, Double> {
   
-  public static class STValueSeriesGenerator extends STValueTracker<XYSeries> {
+  public static class ARValueSeriesGenerator extends ARValueTracker<XYSeries> {
     private static final DataSetFactory<XYSeries> FACTORY = new DataSetFactory<XYSeries>() {
       @Override
       public XYSeries create(String producer) {
@@ -41,8 +42,8 @@ public abstract class STValueTracker<S> extends ValueTrackerProducer<STEntry, S,
       }
     };
     
-    public STValueSeriesGenerator(edu.cmu.sv.modelinference.tools.charting.STValueTracker.FIELD field,
-        LogReader<STEntry> logReader) {
+    public ARValueSeriesGenerator(edu.cmu.sv.modelinference.tools.charting.ARValueTracker.FIELD field,
+        LogReader<AutoresolverEntry> logReader) {
       super(field, logReader, FACTORY);
     }
 
@@ -52,7 +53,7 @@ public abstract class STValueTracker<S> extends ValueTrackerProducer<STEntry, S,
     }
   }
   
-  public static class STDataPointsGenerator extends STValueTracker<DataPointCollection> {
+  public static class ARDataPointsGenerator extends ARValueTracker<DataPointCollection> {
     private static final DataSetFactory<DataPointCollection> FACTORY = new DataSetFactory<DataPointCollection>() {
       @Override
       public DataPointCollection create(String producer) {
@@ -60,8 +61,8 @@ public abstract class STValueTracker<S> extends ValueTrackerProducer<STEntry, S,
       }
     };
     
-    public STDataPointsGenerator(edu.cmu.sv.modelinference.tools.charting.STValueTracker.FIELD field,
-        LogReader<STEntry> logReader) {
+    public ARDataPointsGenerator(edu.cmu.sv.modelinference.tools.charting.ARValueTracker.FIELD field,
+        LogReader<AutoresolverEntry> logReader) {
       super(field, logReader, FACTORY);
     }
 
@@ -74,12 +75,16 @@ public abstract class STValueTracker<S> extends ValueTrackerProducer<STEntry, S,
   //This is really ugly -- should have a tighter connection to the entry
   //Currently only supports numeric types. It would be nice to also track string types e.g. AC_TYPE
   public static enum FIELD {
-    PHI("phi", "NA"),
-    SPEED("speed", "km/h"),
-    UTCTIME("utc", "s"),
-    POS_X("x", "feet"),
-    POS_Y("y", "feet"),
-    POS_Z("z", "feet");
+    ALT("alt", "ft"),
+    ALT_RATE("alt_rate", "N/A"),
+    FUEL_WEIGHT("fueld", "N/A"),
+    GRND_SPEED("grnd_speed", "N/A"),
+    HEADING("heading", "N/A"),
+    IND_SPEED("indic_speed", "N/A"),
+    LAT("lat", "dg"),
+    LON("lon", "dg"),
+    TRUE_AIRSP("t_airspeed", "N/A"),
+    TRUE_COURSE("true_course", "N/A");
     
     private final String id;
     private final String unit;
@@ -100,32 +105,40 @@ public abstract class STValueTracker<S> extends ValueTrackerProducer<STEntry, S,
   
   private final FIELD field;
   
-  public STValueTracker(FIELD field, LogReader<STEntry> logReader, DataSetFactory<S> dataFactory) {
+  public ARValueTracker(FIELD field, LogReader<AutoresolverEntry> logReader, DataSetFactory<S> dataFactory) {
     super(logReader, dataFactory);
     this.field = field;
   }
   
-  private double getValue(STEntry entry, FIELD f) {
+  private double getValue(AutoresolverEntry entry, FIELD f) {
     switch(f) {
-    case PHI:
-      return entry.getPhi();
-    case SPEED:
-      return entry.getSpeed();
-    case UTCTIME:
-      return entry.getUtcTime();
-    case POS_X:
-      return entry.getPosition().getX();
-    case POS_Y:
-      return entry.getPosition().getY();
-    case POS_Z:
-      return entry.getPosition().getZ();
+    case ALT:
+      return entry.getAltitude();
+    case ALT_RATE:
+      return entry.getAltitudeRateFpm();
+    case FUEL_WEIGHT:
+      return entry.getFuelWeight();
+    case GRND_SPEED:
+      return entry.getGroundSpeed();
+    case HEADING:
+      return entry.getHeading();
+    case IND_SPEED:
+      return entry.getIndicatedSpeed();
+    case LAT:
+      return entry.getLatDegrees();
+    case LON:
+      return entry.getLonDegrees();
+    case TRUE_AIRSP:
+      return entry.getTrueAirspeed();
+    case TRUE_COURSE:
+      return entry.getTrueCourse();
     default:
       throw new RuntimeException("Does not support field type " + f.id);
     }
   }
 
   @Override
-  public Double getData(STEntry entry) {
+  public Double getData(AutoresolverEntry entry) {
     double val = getValue(entry, field);
     return val;
   }

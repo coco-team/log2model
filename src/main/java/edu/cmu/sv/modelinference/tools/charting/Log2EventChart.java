@@ -68,6 +68,8 @@ import edu.cmu.sv.modelinference.features.classification.EventClassifier;
 import edu.cmu.sv.modelinference.features.classification.EventUtils;
 import edu.cmu.sv.modelinference.generators.LogEntryFilter;
 import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
+import edu.cmu.sv.modelinference.generators.parser.autoresolver.AutoresolverEntry;
+import edu.cmu.sv.modelinference.generators.parser.autoresolver.AutoresolverParser;
 import edu.cmu.sv.modelinference.generators.parser.reader.LogReader;
 import edu.cmu.sv.modelinference.generators.parser.reader.SequentialLogReader;
 import edu.cmu.sv.modelinference.generators.parser.st.STEntry;
@@ -154,6 +156,19 @@ public class Log2EventChart {
       valueExtractor = new STValueTracker.STDataPointsGenerator(trackedField, reader);
       break;
     case "autoresolver":
+      ARValueTracker.FIELD trackedFieldAR =null;
+      try {
+        trackedFieldAR = ARValueTracker.FIELD.valueOf(cmd.getOptionValue(ADD_OPTS_ARG).toUpperCase());
+      } catch(Exception e) {
+        logger.error(e.getMessage());
+        logger.error("Must be supplied a field to be tracked (e.g., pos_x) to additional arg option");
+        System.exit(-1);
+      }
+      
+      LogReader<AutoresolverEntry> readerAR = new SequentialLogReader<>(new AutoresolverParser());
+      
+      valueExtractor = new ARValueTracker.ARDataPointsGenerator(trackedFieldAR, readerAR);
+      break;
     case "rp":
       default:
         logger.error("Unsupported input type");
