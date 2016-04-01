@@ -24,7 +24,7 @@ import edu.cmu.sv.modelinference.generators.LogEntry;
 import edu.cmu.sv.modelinference.generators.LogProcessor;
 import edu.cmu.sv.modelinference.generators.StateFactory;
 import edu.cmu.sv.modelinference.generators.model.State;
-import edu.cmu.sv.modelinference.generators.parser.reader.LogReader;
+import edu.cmu.sv.modelinference.generators.parser.LogReader;
 
 public class TraceGenerator<T extends LogEntry, S extends State> implements LogProcessor<T> {
 

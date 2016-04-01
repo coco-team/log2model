@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.generators;
+package edu.cmu.sv.modelinference.generators.formats.st;
 
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
+import edu.cmu.sv.modelinference.generators.StateFactory;
+import edu.cmu.sv.modelinference.generators.model.State;
 
 /**
  * @author Kasper Luckow
  */
-public interface LogEntryFilter<T extends LogEntry> {
-  
-  public static <S extends LogEntry> LogEntryFilter<S> EVERYTHING() {
-    return new LogEntryFilter<S>() {
-      @Override
-      public boolean submitForProcessing(S entry) {
-        return true;
-      }
-    };
-  }
-  
-  public boolean submitForProcessing(T entry);
+public interface STStateFactory<S extends State> extends StateFactory<STEntry, S> {
+   
 }

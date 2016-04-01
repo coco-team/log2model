@@ -31,9 +31,9 @@ import org.jfree.chart.renderer.xy.XYShapeRenderer;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
 
-import edu.cmu.sv.modelinference.features.classification.ClassificationResult;
-import edu.cmu.sv.modelinference.features.classification.Event;
-import edu.cmu.sv.modelinference.features.classification.EventClass;
+import edu.cmu.sv.modelinference.detection.features.classification.ClassificationResult;
+import edu.cmu.sv.modelinference.detection.features.classification.Event;
+import edu.cmu.sv.modelinference.detection.features.classification.EventClass;
 
 /**
  * @author Kasper Luckow

@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.generators;
+package edu.cmu.sv.modelinference.generators.formats.rp;
 
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
+import edu.cmu.sv.modelinference.generators.LogEntry;
 
 /**
  * @author Kasper Luckow
  */
-public interface LogEntryFilter<T extends LogEntry> {
-  
-  public static <S extends LogEntry> LogEntryFilter<S> EVERYTHING() {
-    return new LogEntryFilter<S>() {
-      @Override
-      public boolean submitForProcessing(S entry) {
-        return true;
-      }
-    };
+public class RPEntry extends LogEntry {
+
+  public RPEntry(double logTime) {
+    super(logTime);
   }
-  
-  public boolean submitForProcessing(T entry);
+
+  @Override
+  public String getLogProducerId() {
+    return "";
+  }
 }

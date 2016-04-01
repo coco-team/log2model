@@ -49,32 +49,34 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Range;
 
-import edu.cmu.sv.modelinference.features.AvgEventGenerator;
-import edu.cmu.sv.modelinference.features.EWMASmoothingFilter;
-import edu.cmu.sv.modelinference.features.EventDetector;
-import edu.cmu.sv.modelinference.features.EventGenerator;
-import edu.cmu.sv.modelinference.features.EventVisualizer;
-import edu.cmu.sv.modelinference.features.FeatureExtractor;
-import edu.cmu.sv.modelinference.features.MovingAverageEventDetector;
-import edu.cmu.sv.modelinference.features.PredictionModel;
-import edu.cmu.sv.modelinference.features.RoCExtractor;
-import edu.cmu.sv.modelinference.features.UnweightedRectangularSmoothingFilter;
-import edu.cmu.sv.modelinference.features.classification.AvgFeature;
-import edu.cmu.sv.modelinference.features.classification.ClassificationResult;
-import edu.cmu.sv.modelinference.features.classification.Clusterer1D;
-import edu.cmu.sv.modelinference.features.classification.Event;
-import edu.cmu.sv.modelinference.features.classification.EventClass;
-import edu.cmu.sv.modelinference.features.classification.EventClassifier;
-import edu.cmu.sv.modelinference.features.classification.EventUtils;
+import edu.cmu.sv.modelinference.detection.features.AvgEventGenerator;
+import edu.cmu.sv.modelinference.detection.features.EWMASmoothingFilter;
+import edu.cmu.sv.modelinference.detection.features.EventDetector;
+import edu.cmu.sv.modelinference.detection.features.EventGenerator;
+import edu.cmu.sv.modelinference.detection.features.EventVisualizer;
+import edu.cmu.sv.modelinference.detection.features.FeatureExtractor;
+import edu.cmu.sv.modelinference.detection.features.MovingAverageEventDetector;
+import edu.cmu.sv.modelinference.detection.features.PredictionModel;
+import edu.cmu.sv.modelinference.detection.features.RoCExtractor;
+import edu.cmu.sv.modelinference.detection.features.UnweightedRectangularSmoothingFilter;
+import edu.cmu.sv.modelinference.detection.features.classification.AvgFeature;
+import edu.cmu.sv.modelinference.detection.features.classification.ClassificationResult;
+import edu.cmu.sv.modelinference.detection.features.classification.Clusterer1D;
+import edu.cmu.sv.modelinference.detection.features.classification.Event;
+import edu.cmu.sv.modelinference.detection.features.classification.EventClass;
+import edu.cmu.sv.modelinference.detection.features.classification.EventClassifier;
+import edu.cmu.sv.modelinference.detection.features.classification.EventUtils;
 import edu.cmu.sv.modelinference.generators.LogEntryFilter;
 import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
-import edu.cmu.sv.modelinference.generators.parser.autoresolver.AutoresolverEntry;
-import edu.cmu.sv.modelinference.generators.parser.autoresolver.AutoresolverParser;
-import edu.cmu.sv.modelinference.generators.parser.reader.LogReader;
-import edu.cmu.sv.modelinference.generators.parser.reader.SequentialLogReader;
-import edu.cmu.sv.modelinference.generators.parser.st.STEntry;
-import edu.cmu.sv.modelinference.generators.parser.st.STParser;
-import edu.cmu.sv.modelinference.tools.charting.STValueTracker.FIELD;
+import edu.cmu.sv.modelinference.generators.formats.autoresolver.ARValueTracker;
+import edu.cmu.sv.modelinference.generators.formats.autoresolver.AutoresolverEntry;
+import edu.cmu.sv.modelinference.generators.formats.autoresolver.AutoresolverParser;
+import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
+import edu.cmu.sv.modelinference.generators.formats.st.STParser;
+import edu.cmu.sv.modelinference.generators.formats.st.STValueTracker;
+import edu.cmu.sv.modelinference.generators.formats.st.STValueTracker.FIELD;
+import edu.cmu.sv.modelinference.generators.parser.LogReader;
+import edu.cmu.sv.modelinference.generators.parser.SequentialLogReader;
 
 /**
  * @author Kasper Luckow

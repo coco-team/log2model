@@ -13,23 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.generators;
+package edu.cmu.sv.modelinference.generators.formats.st;
 
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.cmu.sv.modelinference.generators.model.State;
+import edu.cmu.sv.modelinference.generators.model.Assignment;
 
 /**
  * @author Kasper Luckow
  */
-public interface LogEntryFilter<T extends LogEntry> {
+public class ArrDepGridState extends State {
   
-  public static <S extends LogEntry> LogEntryFilter<S> EVERYTHING() {
-    return new LogEntryFilter<S>() {
-      @Override
-      public boolean submitForProcessing(S entry) {
-        return true;
-      }
-    };
+
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
-  
-  public boolean submitForProcessing(T entry);
+
+  @Override
+  public boolean equals(Object obj) {
+    return super.equals(obj);
+  }
 }

@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.generators;
-
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
+package edu.cmu.sv.modelinference.generators.formats.st;
 
 /**
  * @author Kasper Luckow
  */
-public interface LogEntryFilter<T extends LogEntry> {
-  
-  public static <S extends LogEntry> LogEntryFilter<S> EVERYTHING() {
-    return new LogEntryFilter<S>() {
-      @Override
-      public boolean submitForProcessing(S entry) {
-        return true;
-      }
-    };
+public class Coord3d extends Coord2d {
+  private final double z;
+  public Coord3d(double x, double y, double z) {
+    super(x,y);
+    this.z = z;
   }
-  
-  public boolean submitForProcessing(T entry);
+  public double getZ() {
+    return this.z;
+  }
 }

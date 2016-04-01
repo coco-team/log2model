@@ -13,23 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.generators;
+package edu.cmu.sv.modelinference.detection.features;
 
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Kasper Luckow
+ *
  */
-public interface LogEntryFilter<T extends LogEntry> {
-  
-  public static <S extends LogEntry> LogEntryFilter<S> EVERYTHING() {
-    return new LogEntryFilter<S>() {
-      @Override
-      public boolean submitForProcessing(S entry) {
-        return true;
-      }
-    };
+public class UnweightedRectangularSmoothingFilter extends RectangularSmoothingFilter {
+
+  public UnweightedRectangularSmoothingFilter() {
+    super();
   }
   
-  public boolean submitForProcessing(T entry);
+  public UnweightedRectangularSmoothingFilter(int windowSize) {
+    super(windowSize);
+  }
+  
+  @Override
+  protected double computeMean(List<Double> data) {
+    double mean = 0;
+    for(double d : data) {
+      mean += d;
+    }
+    return mean / (double)data.size();
+  }
 }

@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.generators;
+package edu.cmu.sv.modelinference.detection.features;
 
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.common.collect.Range;
+
+import edu.cmu.sv.modelinference.detection.features.classification.AvgFeature;
+import edu.cmu.sv.modelinference.detection.features.classification.Event;
 
 /**
  * @author Kasper Luckow
+ *
  */
-public interface LogEntryFilter<T extends LogEntry> {
-  
-  public static <S extends LogEntry> LogEntryFilter<S> EVERYTHING() {
-    return new LogEntryFilter<S>() {
-      @Override
-      public boolean submitForProcessing(S entry) {
-        return true;
-      }
-    };
-  }
-  
-  public boolean submitForProcessing(T entry);
+public interface EventGenerator {
+  public List<Event> computeEvents(List<Range<Integer>> eventIntervals, double[] ys, int stepSize);
 }

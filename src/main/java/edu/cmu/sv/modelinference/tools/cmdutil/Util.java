@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.cli.ParseException;
 
-import edu.cmu.sv.modelinference.generators.parser.st.STModelInferer;
+import edu.cmu.sv.modelinference.generators.formats.st.STModelInferer;
 
 public class Util {
   public static class GridPartitions {

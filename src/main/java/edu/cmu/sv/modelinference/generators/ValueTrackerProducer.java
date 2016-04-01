@@ -23,9 +23,9 @@ import java.util.Set;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import edu.cmu.sv.modelinference.generators.parser.reader.LogReader;
-import edu.cmu.sv.modelinference.generators.parser.st.STEntry;
-import edu.cmu.sv.modelinference.tools.charting.STValueTracker.FIELD;
+import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
+import edu.cmu.sv.modelinference.generators.formats.st.STValueTracker.FIELD;
+import edu.cmu.sv.modelinference.generators.parser.LogReader;
 
 /**
  * @author Kasper Luckow

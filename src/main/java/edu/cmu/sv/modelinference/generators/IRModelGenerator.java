@@ -21,7 +21,7 @@ import edu.cmu.sv.modelinference.generators.model.Model;
 import edu.cmu.sv.modelinference.generators.model.State;
 import edu.cmu.sv.modelinference.generators.model.Transition;
 import edu.cmu.sv.modelinference.generators.model.WeightedTransition;
-import edu.cmu.sv.modelinference.generators.parser.reader.LogReader;
+import edu.cmu.sv.modelinference.generators.parser.LogReader;
 
 /**
  * @author Kasper Luckow

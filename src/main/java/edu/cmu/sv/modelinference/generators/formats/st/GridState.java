@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.generators;
+package edu.cmu.sv.modelinference.generators.formats.st;
 
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
+import edu.cmu.sv.modelinference.generators.model.State;
 
 /**
  * @author Kasper Luckow
  */
-public interface LogEntryFilter<T extends LogEntry> {
-  
-  public static <S extends LogEntry> LogEntryFilter<S> EVERYTHING() {
-    return new LogEntryFilter<S>() {
-      @Override
-      public boolean submitForProcessing(S entry) {
-        return true;
-      }
-    };
+public class GridState extends State {
+
+  private final GridFactory.Grid<Vehicle> grid;
+
+  public GridState(GridFactory.Grid<Vehicle> grid) {
+    this.grid = grid;
   }
   
-  public boolean submitForProcessing(T entry);
+  public GridFactory.Grid<Vehicle> getGrid() {
+    return this.grid;
+  }
+  
+  @Override
+  public String toString() {
+    return this.grid.toString();
+  }
 }
