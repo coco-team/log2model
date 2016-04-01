@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.TreeMap;
 
 /**
  * @author Kasper Luckow
@@ -55,11 +56,11 @@ public class MovingAverageEventDetector implements EventDetector {
     checkArgument(xs.length == ys.length);
     checkArgument(xs.length > 0);
     
-    Map<Integer, Double> upperThreshold = new HashMap<>();
-    Map<Integer, Double> lowerThreshold = new HashMap<>();
+    TreeMap<Integer, Double> upperThreshold = new TreeMap<>();
+    TreeMap<Integer, Double> lowerThreshold = new TreeMap<>();
     
     LinkedList<Double> movingDataSet = new LinkedList<>();
-    for(int i = 0; i < xs.length; i++) {
+    for(int i = 0; i < xs.length - 1; i++) {
       if(this.windowSize > UNBOUNDED_WINDOW_SIZE && i > this.windowSize) {
         movingDataSet.removeLast();
       }
@@ -68,8 +69,8 @@ public class MovingAverageEventDetector implements EventDetector {
       double stdDev = Math.sqrt(computeVariance(movingDataSet, mean));
       
       //+1 here for forecasting
-      upperThreshold.put(((int)xs[i]) + 1, mean + (stdDev * stdDevs));
-      lowerThreshold.put(((int)xs[i]) + 1, mean - (stdDev * stdDevs));
+      upperThreshold.put(((int)xs[i + 1]), mean + (stdDev * stdDevs));
+      lowerThreshold.put(((int)xs[i + 1]), mean - (stdDev * stdDevs));
     }
     
     return new PredictionModel(upperThreshold, lowerThreshold);
@@ -105,6 +106,6 @@ public class MovingAverageEventDetector implements EventDetector {
     
     //It does not seem clear whether we should divide by the data size
     //or data size - 1
-    return sqDev / (double)(data.size() - 1);
+    return sqDev / (double)data.size();
   }  
 }

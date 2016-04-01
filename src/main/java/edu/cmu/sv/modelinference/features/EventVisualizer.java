@@ -115,6 +115,10 @@ public class EventVisualizer {
 
     rawDataSet.addSeries(producer + " (raw)", rawData);
     
+    //get time step size
+    //the assumption here is that the step size is fixed!
+    int timeStepSize = (int)(rawXs[rawXs.length - 1] - rawXs[0])/(rawXs.length-1);
+    
     double[] ys;
     if(smoothingFilter != null) {
       ys = smoothingFilter.smoothen(rawXs, rawYs);
@@ -142,17 +146,17 @@ public class EventVisualizer {
     featureDataSet.addSeries("Upper thres", upperThreshold.toDataArray());
     featureDataSet.addSeries("Lower thres", lowerThreshold.toDataArray());    
 
-    
-    DataChart c = new DataChart("Featuresssssssssss chart");
-    JFreeChart chart = c.chart("");    
-
-    //Plot violations
-    XYPlot plot = chart.getXYPlot();
-    plot.setDataset(0, featureDataSet);
-    
-    c.pack();
-    RefineryUtilities.centerFrameOnScreen(c);
-    c.setVisible(true);    
+//    
+//    DataChart c = new DataChart("Featuresssssssssss chart");
+//    JFreeChart chart = c.chart("");    
+//
+//    //Plot violations
+//    XYPlot plot = chart.getXYPlot();
+//    plot.setDataset(0, featureDataSet);
+//    
+//    c.pack();
+//    RefineryUtilities.centerFrameOnScreen(c);
+//    c.setVisible(true);    
     
     List<Range<Integer>> violations = predictionModel.findThresholdViolations(rawXs, yFeat);
     List<Range<Integer>> eventIntervals = EventUtils.computeEventSequence(rawXs[0], rawXs[rawXs.length - 1], violations);
@@ -162,7 +166,7 @@ public class EventVisualizer {
     logger.info("Points in raw xs: " + rawXs.length);
     logger.info("Points in feature: " + yFeat.length);
     
-    List<Event> events = eventGenerator.computeEvents(eventIntervals, yFeat);
+    List<Event> events = eventGenerator.computeEvents(eventIntervals, yFeat, timeStepSize);
     logger.info("events computed: " + events.size());
 
     ClassificationResult classes = eventClassifier.classify(events);

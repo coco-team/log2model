@@ -28,5 +28,5 @@ import edu.cmu.sv.modelinference.features.classification.Event;
  *
  */
 public interface EventGenerator {
-  public List<Event> computeEvents(List<Range<Integer>> eventIntervals, double[] ys);
+  public List<Event> computeEvents(List<Range<Integer>> eventIntervals, double[] ys, int stepSize);
 }

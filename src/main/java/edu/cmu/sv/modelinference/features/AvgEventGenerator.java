@@ -30,12 +30,12 @@ import edu.cmu.sv.modelinference.features.classification.Event;
 public class AvgEventGenerator implements EventGenerator {
   
   @Override
-  public List<Event> computeEvents(List<Range<Integer>> eventIntervals, double[] ys) {
+  public List<Event> computeEvents(List<Range<Integer>> eventIntervals, double[] ys, int stepSize) {
     List<Event> avgForEvents = new ArrayList<>();
     int idx = 0;
     for(Range<Integer> event : eventIntervals) {
-      double[] yData = new double[event.upperEndpoint() - event.lowerEndpoint()];
-      for(int i = 0, r = event.lowerEndpoint(); r < event.upperEndpoint(); r++, i++, idx++) {
+      double[] yData = new double[(event.upperEndpoint() - event.lowerEndpoint())/stepSize];
+      for(int i = 0, r = event.lowerEndpoint(); r < event.upperEndpoint(); r+=stepSize, i++, idx++) {
         yData[i] = ys[idx];
       }
       avgForEvents.add(new Event(event, new AvgFeature(yData)));

@@ -20,11 +20,15 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.Clusterer;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.commons.math3.ml.clustering.MultiKMeansPlusPlusClusterer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.TreeMultiset;
 
@@ -54,6 +58,8 @@ public class Clusterer1D implements EventClassifier {
       return "(0, " + event.getFeature().getData() + ")";
     }
   }
+  
+  private static final Logger logger = LoggerFactory.getLogger(Clusterer1D.class);
 
   private final static int MAX_K_DEFAULT = 5;
   private final static int MAX_ITERATIONS_DEFAULT = -1;
@@ -100,8 +106,24 @@ public class Clusterer1D implements EventClassifier {
     for(Event event : events) {
       dataCol.add(new DataWrapper(event));
     }
-    Clusterer<DataWrapper> clusterer = new MultiKMeansPlusPlusClusterer<>(new KMeansPlusPlusClusterer<DataWrapper>(maxK, maxIterations), trials);
-    List<? extends Cluster<DataWrapper>> clusterResults = clusterer.cluster(dataCol);
+    List<? extends Cluster<DataWrapper>> clusterResults = null;
+    int currK = this.maxK;
+    while((clusterResults = computeClusters(dataCol, currK)) == null) {
+      logger.warn("Lowering k from " + currK + " to " + (currK - 1));
+      currK--;
+    }
+    logger.info("Constructed cluster with " + currK + " classes");
     return buildResult(clusterResults);
+  }
+  
+  private List<? extends Cluster<DataWrapper>> computeClusters(Collection<DataWrapper> dataCol, int k) {
+    List<? extends Cluster<DataWrapper>> clusterResults = null;
+    try {
+    Clusterer<DataWrapper> clusterer = new MultiKMeansPlusPlusClusterer<>(new KMeansPlusPlusClusterer<DataWrapper>(k, maxIterations), trials);
+    clusterResults = clusterer.cluster(dataCol);
+    } catch(NumberIsTooSmallException e) {
+      logger.warn("Too few datapoints for clusters: " + e.getMessage());
+    }
+    return clusterResults;
   }
 }

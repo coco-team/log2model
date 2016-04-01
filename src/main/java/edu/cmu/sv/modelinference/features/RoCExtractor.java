@@ -38,10 +38,18 @@ public class RoCExtractor implements FeatureExtractor {
     for(int i = 0; i < yRaw.length; i++) {
       int lower = i - numPointsSeparator;
       lower = (lower < 0) ? 0 : lower;
-      int upper = i + numPointsSeparator;
-      upper = (upper >= yRaw.length) ? yRaw.length - 1 : upper;
       
-      ySlope[i] = (yRaw[upper] - yRaw[lower]) / (xRaw[upper] - xRaw[lower]);
+      //FIXME: This is an important one: de we want to compute the slope by also considering
+      // the future i.e. upper = i + numPointsSeparator?
+      // We did this previously, but then event can be incorrectly be found before they are
+      // happening in the raw data.
+      int upper = i;
+      // upper = (upper >= yRaw.length) ? yRaw.length - 1 : upper;
+      
+      //FIXME: Not sure if we should divide by the interval as in the uncommented
+      //part here or simply number of points regardless of time span
+      //ySlope[i] = (yUpper - yLower) / (xRaw[upper] - xRaw[lower]);
+      ySlope[i] = (yRaw[upper] - yRaw[lower]) / (numPointsSeparator + 1);
     }
     
     return ySlope;

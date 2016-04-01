@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.commons.math3.util.Pair;
 import org.jfree.data.xy.XYSeries;
@@ -36,10 +38,10 @@ import edu.cmu.sv.modelinference.tools.charting.DataPointCollection;
  */
 
 public class PredictionModel {
-  private Map<Integer, Double> upperThreshold;
-  private Map<Integer, Double> lowerThreshold;
+  private SortedMap<Integer, Double> upperThreshold;
+  private SortedMap<Integer, Double> lowerThreshold;
   
-  PredictionModel(Map<Integer, Double> upperThreshold, Map<Integer, Double> lowerThreshold) {
+  PredictionModel(SortedMap<Integer, Double> upperThreshold, SortedMap<Integer, Double> lowerThreshold) {
     checkArgument(upperThreshold.size() == lowerThreshold.size());
     this.upperThreshold = upperThreshold;
     this.lowerThreshold = lowerThreshold;
@@ -82,7 +84,7 @@ public class PredictionModel {
     return computeThreshold(lowerThreshold);
   }
   
-  private static DataPointCollection computeThreshold(Map<Integer, Double> threshold) {
+  private static DataPointCollection computeThreshold(SortedMap<Integer, Double> threshold) {
     DataPointCollection dp = new DataPointCollection();
     for(int key : threshold.keySet()) {
       dp.add(new DataPoint(key, threshold.get(key)));
