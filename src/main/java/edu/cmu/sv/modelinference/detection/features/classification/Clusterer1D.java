@@ -119,8 +119,8 @@ public class Clusterer1D implements EventClassifier {
   private List<? extends Cluster<DataWrapper>> computeClusters(Collection<DataWrapper> dataCol, int k) {
     List<? extends Cluster<DataWrapper>> clusterResults = null;
     try {
-    Clusterer<DataWrapper> clusterer = new MultiKMeansPlusPlusClusterer<>(new KMeansPlusPlusClusterer<DataWrapper>(k, maxIterations), trials);
-    clusterResults = clusterer.cluster(dataCol);
+      Clusterer<DataWrapper> clusterer = new MultiKMeansPlusPlusClusterer<>(new KMeansPlusPlusClusterer<DataWrapper>(k, maxIterations), trials);
+      clusterResults = clusterer.cluster(dataCol);
     } catch(NumberIsTooSmallException e) {
       logger.warn("Too few datapoints for clusters: " + e.getMessage());
     }

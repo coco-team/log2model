@@ -190,7 +190,7 @@ public class EventVisualizer {
     visualizeClasses(classes, clusterColors);
     
     //Visualize features
-    visualizeFeatures(classes, clusterColors, violations, rawDataSet, featureDataSet);
+    visualizeFeatures(classes, clusterColors, violations, timeStepSize, rawDataSet, featureDataSet);
   }
   
   private void visualizeClasses(ClassificationResult classes, Map<EventClass, Color> clusterColors) {
@@ -199,33 +199,36 @@ public class EventVisualizer {
     XYPlot clusterPlot = clusterChart.getXYPlot();
     
     int dataSetIndex = 0;
-    DefaultXYDataset eventDataSet = new DefaultXYDataset();
     Map<Integer, EventClass> dataSetIdx2EvtClass = new HashMap<>(); //ugly
+    DefaultXYDataset eventDataSet = new DefaultXYDataset();
     for(EventClass evtCl : classes.getEventClasses()) {
       double[][] clusterDataSet = new double[][] {new double[evtCl.getEvents().size()], new double[evtCl.getEvents().size()]};
       int i = 0;
       for(Event data : evtCl.getEvents()) {
         clusterDataSet[0][i] = 0;
-        clusterDataSet[0][i] = data.getFeature().getData();
+        clusterDataSet[1][i] = data.getFeature().getData();
         i++;
       }
       eventDataSet.addSeries("Class " + evtCl.getClassId(), clusterDataSet);
-      eventDataSet.addSeries(dataSetIndex, clusterDataSet);
 
       dataSetIdx2EvtClass.put(dataSetIndex, evtCl);
       dataSetIndex++;
     }
+    clusterPlot.setDataset(eventDataSet);
+
     for(Entry<Integer, EventClass> ent : dataSetIdx2EvtClass.entrySet()) {
       int idx = ent.getKey();
-      clusterPlot.getRendererForDataset(clusterPlot.getDataset(idx)).setSeriesPaint(idx, clusterColors.get(ent.getValue())); 
+      Color clr = clusterColors.get(ent.getValue());
+      logger.info("Setting color " + clr + " for event class " + ent.getValue().getClassId() + " with index " + idx);
+      clusterPlot.getRendererForDataset(clusterPlot.getDataset(0)).setSeriesPaint(idx, clr); 
     }
-    
+
     clustersDataChart.pack();
     RefineryUtilities.centerFrameOnScreen(clustersDataChart);
     clustersDataChart.setVisible(true);
   }
   
-  private void visualizeFeatures(ClassificationResult classes, Map<EventClass, Color> clusterColors, List<Range<Integer>> violations, DefaultXYDataset rawDataSet, DefaultXYDataset featuresDataSet) {
+  private void visualizeFeatures(ClassificationResult classes, Map<EventClass, Color> clusterColors, List<Range<Integer>> violations, int timeStepSize, DefaultXYDataset rawDataSet, DefaultXYDataset featuresDataSet) {
 
     //Get chart on which we will plot the features and violations
     DataChart c = new DataChart("Features chart");
@@ -234,7 +237,7 @@ public class EventVisualizer {
     //Plot violations
     XYPlot plot = chart.getXYPlot();
     plot.setDataset(0, rawDataSet);
-    plot.setRenderer(0, new ClassificationXYRenderer(classes, clusterColors));
+    plot.setRenderer(0, new ClassificationXYRenderer(classes, timeStepSize, clusterColors));
     
     plot.setDataset(1, featuresDataSet);
     plot.setRenderer(1, new XYLineAndShapeRenderer());

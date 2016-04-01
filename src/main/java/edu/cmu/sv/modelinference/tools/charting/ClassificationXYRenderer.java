@@ -46,10 +46,13 @@ public class ClassificationXYRenderer extends XYLineAndShapeRenderer {
   private final ClassificationResult clusterResults;
   
   private Map<EventClass, Color> cluster2Color;
-  private RangeMap<Integer, EventClass> eventRanges2ClusterId = TreeRangeMap.create();
+  private RangeMap<Integer, EventClass> eventRanges2Class = TreeRangeMap.create();
   
-  public ClassificationXYRenderer(ClassificationResult clusterResults, Map<EventClass, Color> cluster2Color) {
+  private final int stepSize;
+  
+  public ClassificationXYRenderer(ClassificationResult clusterResults, int stepSize, Map<EventClass, Color> cluster2Color) {
     this.clusterResults = clusterResults;
+    this.stepSize = stepSize;
     this.cluster2Color = cluster2Color;
     populateIndex(this.clusterResults);
   }
@@ -57,16 +60,17 @@ public class ClassificationXYRenderer extends XYLineAndShapeRenderer {
   private void populateIndex(ClassificationResult results) {
     for(EventClass cl : results.getEventClasses()) {
       for(Event evt : cl.getEvents()) {
-        eventRanges2ClusterId.put(evt.getRange(), cl);
+        eventRanges2Class.put(evt.getRange(), cl);
       }
     }
   }
   
   @Override
   public Paint getItemPaint(int row, int col) {
-    EventClass cluster = eventRanges2ClusterId.get(col + 10); //FIXME: check why we have to set an offset here
+    EventClass cluster = eventRanges2Class.get(col*stepSize -1);
     if(cluster != null) {
-      return cluster2Color.get(cluster);
+      Color clr = cluster2Color.get(cluster);
+      return clr;
     } else 
       return super.getItemPaint(row, col);
   }

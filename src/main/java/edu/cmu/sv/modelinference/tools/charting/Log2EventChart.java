@@ -177,7 +177,6 @@ public class Log2EventChart {
         printHelpAndExit(options);
     }
     
-    
     Map<String, DataPointCollection> rawData = valueExtractor.computeDataSet(logFilePath);
     
     for(Entry<String, DataPointCollection> producer : rawData.entrySet()) {      
@@ -198,7 +197,7 @@ public class Log2EventChart {
 
     EventGenerator eventGenerator = new AvgEventGenerator();
     
-    EventClassifier classifier = new Clusterer1D(7, -1, 3000);
+    EventClassifier classifier = new Clusterer1D(3, 10, 3000);
     
     EventVisualizer.Builder bldr = new EventVisualizer.Builder(movingAvg,
               slopeExtractor, eventGenerator, classifier);
