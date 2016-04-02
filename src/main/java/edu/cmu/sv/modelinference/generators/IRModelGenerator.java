@@ -15,6 +15,7 @@
  */
 package edu.cmu.sv.modelinference.generators;
 
+import java.io.File;
 import java.io.IOException;
 
 import edu.cmu.sv.modelinference.generators.model.Model;
@@ -47,7 +48,7 @@ public final class IRModelGenerator<T extends LogEntry, S extends State> impleme
     currState = null;
     currentTime = -1.0;
     
-    this.logReader.parseLog(logFile);
+    this.logReader.parseLog(new File(logFile));
     
     return model;
   }

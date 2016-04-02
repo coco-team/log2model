@@ -56,7 +56,7 @@ public class DelayFinder implements LogProcessor<STEntry> {
     stReader.addLogProcessor(this);
   }
   
-  public void start(String logFile) throws IOException {
+  public void start(File logFile) throws IOException {
     vehicleDelay = new HashMap<>();
     stReader.parseLog(logFile);
   }

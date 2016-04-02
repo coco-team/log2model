@@ -15,6 +15,7 @@
  */
 package edu.cmu.sv.modelinference.generators.formats.st.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -50,7 +51,7 @@ public class GridDimensionsFinder implements LogProcessor<STEntry> {
     stReader.addLogProcessor(this);
   }
   
-  public Dimensions start(String logFile) throws IOException {
+  public Dimensions start(File logFile) throws IOException {
     this.dim = new Dimensions();
     stReader.parseLog(logFile);
     return this.dim;

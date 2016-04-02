@@ -112,7 +112,7 @@ public class Log2Traces {
       
       LogReader<STEntry> reader = new SequentialLogReader<>(new STParser(), filter);
       GridDimensionsFinder d = new GridDimensionsFinder();
-      Dimensions dim = d.start(logFilePath);
+      Dimensions dim = d.start(new File(logFilePath));
       STGridStateFactory stateGen = new STGridStateFactory(
           new Coord2d(dim.minX, dim.minY), 
           new Coord2d(dim.maxX, dim.maxY), 
@@ -120,7 +120,7 @@ public class Log2Traces {
           parts.vert);
       
       TraceGenerator<STEntry, GridState> traceGenerator = new TraceGenerator<>(reader, stateGen);
-      Collection<TimedTrace<GridState>> traces = traceGenerator.computeTraces(logFilePath);
+      Collection<TimedTrace<GridState>> traces = traceGenerator.computeTraces(new File(logFilePath));
       PrintWriter pw = new PrintWriter(new File("./bla.txt"));
       for(TimedTrace<GridState> trace : traces) {
 

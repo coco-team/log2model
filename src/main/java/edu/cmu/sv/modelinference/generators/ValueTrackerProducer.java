@@ -15,7 +15,9 @@
  */
 package edu.cmu.sv.modelinference.generators;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +45,7 @@ public abstract class ValueTrackerProducer<T extends LogEntry, S, U> implements 
     this.dataFactory = dataFactory;
   }
 
-  public Map<String, S> computeDataSet(String logFile) throws IOException {
+  public Map<String, S> computeDataSet(File logFile) throws IOException {
     this.logproducer2dataset = new HashMap<>();
     this.logReader.parseLog(logFile);
     return this.logproducer2dataset;

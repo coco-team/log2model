@@ -39,8 +39,8 @@ public class SequentialLogReader<T extends LogEntry> extends LogReader<T> {
   }
 
   @Override
-  public void parseLog(String logFile) throws IOException {
-    FileReader fr = new FileReader(new File(logFile));
+  public void parseLog(File logFile) throws IOException {
+    FileReader fr = new FileReader(logFile);
     try(BufferedReader rd = new BufferedReader(fr)) {
       String logEntry;
       while((logEntry = rd.readLine()) != null) {

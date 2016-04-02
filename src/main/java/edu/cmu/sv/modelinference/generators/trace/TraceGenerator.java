@@ -15,6 +15,7 @@
  */
 package edu.cmu.sv.modelinference.generators.trace;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class TraceGenerator<T extends LogEntry, S extends State> implements LogP
     this.logReader.addLogProcessor(this);
   }
   
-  public Collection<TimedTrace<S>> computeTraces(String logFile) throws IOException {
+  public Collection<TimedTrace<S>> computeTraces(File logFile) throws IOException {
     this.logReader.parseLog(logFile);
     return this.id2traces.values();    
   }

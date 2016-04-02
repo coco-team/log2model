@@ -15,39 +15,15 @@
  */
 package edu.cmu.sv.modelinference.tools.charting;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.UnknownKeyException;
-import org.jfree.data.xy.DefaultXYDataset;
-import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RefineryUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Range;
 
 import edu.cmu.sv.modelinference.detection.features.AvgEventGenerator;
 import edu.cmu.sv.modelinference.detection.features.EWMASmoothingFilter;
@@ -56,138 +32,70 @@ import edu.cmu.sv.modelinference.detection.features.EventGenerator;
 import edu.cmu.sv.modelinference.detection.features.EventVisualizer;
 import edu.cmu.sv.modelinference.detection.features.FeatureExtractor;
 import edu.cmu.sv.modelinference.detection.features.MovingAverageEventDetector;
-import edu.cmu.sv.modelinference.detection.features.PredictionModel;
 import edu.cmu.sv.modelinference.detection.features.RoCExtractor;
-import edu.cmu.sv.modelinference.detection.features.UnweightedRectangularSmoothingFilter;
-import edu.cmu.sv.modelinference.detection.features.classification.AvgFeature;
-import edu.cmu.sv.modelinference.detection.features.classification.ClassificationResult;
 import edu.cmu.sv.modelinference.detection.features.classification.Clusterer1D;
-import edu.cmu.sv.modelinference.detection.features.classification.Event;
-import edu.cmu.sv.modelinference.detection.features.classification.EventClass;
 import edu.cmu.sv.modelinference.detection.features.classification.EventClassifier;
-import edu.cmu.sv.modelinference.detection.features.classification.EventUtils;
-import edu.cmu.sv.modelinference.generators.LogEntryFilter;
 import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
-import edu.cmu.sv.modelinference.generators.formats.autoresolver.ARValueTracker;
-import edu.cmu.sv.modelinference.generators.formats.autoresolver.AutoresolverEntry;
-import edu.cmu.sv.modelinference.generators.formats.autoresolver.AutoresolverParser;
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
-import edu.cmu.sv.modelinference.generators.formats.st.STParser;
-import edu.cmu.sv.modelinference.generators.formats.st.STValueTracker;
-import edu.cmu.sv.modelinference.generators.formats.st.STValueTracker.FIELD;
-import edu.cmu.sv.modelinference.generators.parser.LogReader;
-import edu.cmu.sv.modelinference.generators.parser.SequentialLogReader;
+import edu.cmu.sv.modelinference.tools.LogHandler;
 
 /**
  * @author Kasper Luckow
  */
-public class Log2EventChart {
-  private static final String HELP_ARG = "help";
-  private static final String INPUT_ARG = "i";
-  private static final String INPUT_TYPE_ARG = "t";
-  private static final String ADD_OPTS_ARG = "a";
-  
+public class Log2EventChart implements LogHandler<Void> {
   private static final Logger logger = LoggerFactory.getLogger(Log2EventChart.class.getName());
-      
+
+  private Set<LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>>> logHandlers = new HashSet<>();
   
-  public static void main(String[] args) throws IOException {    
-    Options options = createCmdOptions();
+  public Log2EventChart() {
+    logHandlers.add(new AREventChartHandler());
+  }
+
+  @Override
+  public String getHandlerName() {
+    return "eventchart";
+  }
+  
+  @Override
+  public Void process(String logFile, String logType, String[] additionalCmdArgs) throws LogProcessingException {
+    LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>> logHandler = null;
+    boolean found = false;
+    for(LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>> lh : logHandlers) {
+      if(lh.getHandlerName().equals(logType)) {
+        logHandler = lh;
+        found = true;
+        break;
+      }
+    }
+    if(!found) {
+      StringBuilder sb = new StringBuilder();
+      Iterator<LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>>> logIter = logHandlers.iterator();
+      while(logIter.hasNext()) {
+        sb.append(logIter.next().getHandlerName());
+        if(logIter.hasNext())
+          sb.append(", ");
+      }
+      logger.error("Did not find loghandler for " + logType);
+      throw new LogProcessingException("Supported log handlers: " + sb.toString());
+    }
+    logger.info("Using loghandler for logtype: " + logHandler.getHandlerName());
     
-    CommandLineParser parser = new DefaultParser();
-    CommandLine cmd = null;
+    ValueTrackerProducer<?, DataPointCollection, ?> valueExtractor = logHandler.process(logFile, logType, additionalCmdArgs);
+    
+    Map<String, DataPointCollection> rawData;
     try {
-      cmd = parser.parse(options, args);
-    } catch(ParseException exp) {
-      printHelpAndExit(options);
+      rawData = valueExtractor.computeDataSet(new File(logFile));
+    } catch (IOException e) {
+      throw new LogProcessingException(e);
     }
-    
-    if(cmd.hasOption(HELP_ARG)) {
-      printHelpAndExit(options);
-    }
-    
-    String logFilePath = null;
-    if(cmd.hasOption(INPUT_ARG)) {
-      logFilePath = cmd.getOptionValue(INPUT_ARG);
-    } else {
-      printHelpAndExit(options);
-    }
-    
-    //use enums instead
-    String logType = "";
-    
-    //When options are required (required() called in option builder), do
-    //we need to check hasValue, or will the parser simply throw an exception
-    //if the option is not provided?
-    if(cmd.hasOption(INPUT_TYPE_ARG)) {
-      logType = cmd.getOptionValue(INPUT_TYPE_ARG);
-    } else
-      printHelpAndExit(options);
-    
-    long start = System.currentTimeMillis();
-    
-    ValueTrackerProducer<?, DataPointCollection, ?> valueExtractor = null;
-    
-    //Expand this to be more pluggable. ugly
-    switch(logType.toLowerCase()) {
-    case "st":
-      FIELD trackedField =null;
-      try {
-        trackedField = FIELD.valueOf(cmd.getOptionValue(ADD_OPTS_ARG).toUpperCase());
-      } catch(Exception e) {
-        logger.error(e.getMessage());
-        logger.error("Must be supplied a field to be tracked (e.g., pos_x) to additional arg option");
-        System.exit(-1);
-      }
-      
-      // Hardcoded atm :/
-      LogEntryFilter<STEntry> filter =
-      new LogEntryFilter<STEntry>() {
-        String tracked = "";
-        @Override
-        public boolean submitForProcessing(STEntry entry) {
-          if(entry.getCallSign().equals("USA5596")) {
-            tracked = entry.getCallSign();
-            return true;
-          }          
-          return entry.getCallSign().equals(tracked);
-        }
-      };
-      
-      LogReader<STEntry> reader = new SequentialLogReader<>(new STParser(), filter);
-      
-      valueExtractor = new STValueTracker.STDataPointsGenerator(trackedField, reader);
-      break;
-    case "autoresolver":
-      ARValueTracker.FIELD trackedFieldAR =null;
-      try {
-        trackedFieldAR = ARValueTracker.FIELD.valueOf(cmd.getOptionValue(ADD_OPTS_ARG).toUpperCase());
-      } catch(Exception e) {
-        logger.error(e.getMessage());
-        logger.error("Must be supplied a field to be tracked (e.g., pos_x) to additional arg option");
-        System.exit(-1);
-      }
-      
-      LogReader<AutoresolverEntry> readerAR = new SequentialLogReader<>(new AutoresolverParser());
-      
-      valueExtractor = new ARValueTracker.ARDataPointsGenerator(trackedFieldAR, readerAR);
-      break;
-    case "rp":
-      default:
-        logger.error("Unsupported input type");
-        printHelpAndExit(options);
-    }
-    
-    Map<String, DataPointCollection> rawData = valueExtractor.computeDataSet(logFilePath);
     
     for(Entry<String, DataPointCollection> producer : rawData.entrySet()) {      
       performAnalysis(producer.getKey(), producer.getValue().toDataArray());
     }
     
-    logger.info("Done constructing chart");
-    logger.info("Processing time: " + (System.currentTimeMillis() - start));
+    return null;
   }
   
-  private static void performAnalysis(String producer, double[][] rawData) {
+  private void performAnalysis(String producer, double[][] rawData) {
 
     //Feature: slope/rate-of-change
     FeatureExtractor slopeExtractor = new RoCExtractor();
@@ -209,39 +117,5 @@ public class Log2EventChart {
         .build();
     
     eventVisualizer.visualize(producer, rawData);
-  }
-  
-  private static void printHelpAndExit(Options options) {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Log2EventChart.class.getName(), options);
-    System.exit(0);
-  }
-  
-  public static Options createCmdOptions() {
-    Options options = new Options();
-    
-    Option help = new Option(HELP_ARG, "print this message");
-
-    Option inputType = Option.builder(INPUT_TYPE_ARG).argName("st | autoresolver")
-        .hasArg()
-        .desc("Specify log type")
-        .required()
-        .build();
-    
-    Option addOpts = Option.builder(ADD_OPTS_ARG).argName("Additional options").hasArg()
-        .desc("Additional input type options").build();
-    
-    Option input = Option.builder(INPUT_ARG).argName("file")
-                                .hasArg()
-                                .desc("Specify input file.")
-                                .required()
-                                .build();
-
-
-    options.addOption(inputType);
-    options.addOption(addOpts);
-    options.addOption(help);
-    options.addOption(input);
-    return options;
   }
 }

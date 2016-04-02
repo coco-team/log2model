@@ -39,7 +39,7 @@ public class STCoordOutputter implements LogProcessor<STEntry> {
     
   }
   
-  public void start(String logFile, File outputFile) throws IOException {
+  public void start(File logFile, File outputFile) throws IOException {
     this.writer = new PrintWriter(outputFile, "UTF-8");
     stReader.parseLog(logFile);
     this.writer.close();

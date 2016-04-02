@@ -15,6 +15,7 @@
  */
 package edu.cmu.sv.modelinference.generators.formats.st;
 
+import java.io.File;
 import java.io.IOException;
 
 import edu.cmu.sv.modelinference.generators.IRModelGenerator;
@@ -45,7 +46,7 @@ public class STModelInferer implements ModelInferer<GridState> {
         return true;
       }
     });
-    Dimensions dim = dimFinder.start(logFile);
+    Dimensions dim = dimFinder.start(new File(logFile));
     
     IRModelGenerator<STEntry, GridState> irGen = new IRModelGenerator<>(
         new SequentialLogReader<>(

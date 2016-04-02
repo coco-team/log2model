@@ -15,7 +15,9 @@
  */
 package edu.cmu.sv.modelinference.generators.parser;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,7 +48,7 @@ public abstract class LogReader<T extends LogEntry> {
     this.logProcessors.add(logProcessor);
   }
   
-  public abstract void parseLog(String logFile) throws IOException;
+  public abstract void parseLog(File log) throws IOException;
   
   protected final void processRawEntry(String rawEntry) throws ParserException {
     T entry = logParser.parse(rawEntry);
