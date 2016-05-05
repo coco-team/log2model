@@ -13,40 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.detection.features.classification;
+package edu.cmu.sv.modelinference.tools.detection.features;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.AbstractMap.SimpleEntry;
-
-import com.google.common.collect.Range;
 
 /**
  * @author Kasper Luckow
  *
  */
-public class Event {
-  private final Range<Integer> xRange;
-  private final EventFeature feat;
-  
-  public Event(Range<Integer> xRange, EventFeature feat) {
-    this.xRange = xRange;
-    this.feat = feat;
+public class UnweightedRectangularSmoothingFilter extends RectangularSmoothingFilter {
+
+  public UnweightedRectangularSmoothingFilter() {
+    super();
   }
   
-  public Range<Integer> getRange() {
-    return this.xRange;
-  }
-  
-  public EventFeature getFeature() {
-    return this.feat;
+  public UnweightedRectangularSmoothingFilter(int windowSize) {
+    super(windowSize);
   }
   
   @Override
-  public String toString() {
-    return xRange.toString() + ": " + feat.toString();
+  protected double computeMean(List<Double> data) {
+    double mean = 0;
+    for(double d : data) {
+      mean += d;
+    }
+    return mean / (double)data.size();
   }
 }

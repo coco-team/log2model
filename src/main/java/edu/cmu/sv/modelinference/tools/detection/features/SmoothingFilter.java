@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.detection.features.classification;
+package edu.cmu.sv.modelinference.tools.detection.features;
 
 /**
  * @author Kasper Luckow
  *
  */
-public interface EventFeature {
-  
-  public double getData();
+public interface SmoothingFilter {
+  public double[] smoothen(double[] xs, double[] ys);
 }

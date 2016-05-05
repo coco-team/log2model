@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.detection.features;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.common.collect.Range;
-
-import edu.cmu.sv.modelinference.detection.features.classification.AvgFeature;
-import edu.cmu.sv.modelinference.detection.features.classification.Event;
+package edu.cmu.sv.modelinference.tools.detection.features.classification;
 
 /**
  * @author Kasper Luckow
  *
  */
-public interface EventGenerator {
-  public List<Event> computeEvents(List<Range<Integer>> eventIntervals, double[] ys, int stepSize);
+public interface EventFeature {
+  
+  public double getData();
 }

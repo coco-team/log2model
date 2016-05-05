@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.detection.features;
+package edu.cmu.sv.modelinference.tools.detection.features;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -38,15 +38,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Range;
 
-import edu.cmu.sv.modelinference.detection.features.classification.ClassificationResult;
-import edu.cmu.sv.modelinference.detection.features.classification.Event;
-import edu.cmu.sv.modelinference.detection.features.classification.EventClass;
-import edu.cmu.sv.modelinference.detection.features.classification.EventClassifier;
-import edu.cmu.sv.modelinference.detection.features.classification.EventUtils;
 import edu.cmu.sv.modelinference.tools.charting.ClassificationXYRenderer;
 import edu.cmu.sv.modelinference.tools.charting.DataChart;
 import edu.cmu.sv.modelinference.tools.charting.DataPointCollection;
 import edu.cmu.sv.modelinference.tools.charting.Log2EventChart;
+import edu.cmu.sv.modelinference.tools.detection.features.classification.ClassificationResult;
+import edu.cmu.sv.modelinference.tools.detection.features.classification.Event;
+import edu.cmu.sv.modelinference.tools.detection.features.classification.EventClass;
+import edu.cmu.sv.modelinference.tools.detection.features.classification.EventClassifier;
+import edu.cmu.sv.modelinference.tools.detection.features.classification.EventUtils;
 
 /**
  * @author Kasper Luckow

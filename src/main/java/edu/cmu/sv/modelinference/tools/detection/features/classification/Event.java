@@ -13,34 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.detection.features;
+package edu.cmu.sv.modelinference.tools.detection.features.classification;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.AbstractMap.SimpleEntry;
+
+import com.google.common.collect.Range;
+
 /**
  * @author Kasper Luckow
  *
  */
-public class EWMASmoothingFilter extends RectangularSmoothingFilter {
-  private final double alpha;
+public class Event {
+  private final Range<Integer> xRange;
+  private final EventFeature feat;
   
-  public EWMASmoothingFilter(int windowSize, double alpha) {
-    super(windowSize);
-    checkArgument(alpha >= 0 && alpha <= 1.0);
-    this.alpha = alpha;
+  public Event(Range<Integer> xRange, EventFeature feat) {
+    this.xRange = xRange;
+    this.feat = feat;
+  }
+  
+  public Range<Integer> getRange() {
+    return this.xRange;
+  }
+  
+  public EventFeature getFeature() {
+    return this.feat;
   }
   
   @Override
-  protected double computeMean(List<Double> data) {
-    Iterator<Double> iter = data.iterator();
-    double avg = iter.next();
-    while(iter.hasNext()) {
-      avg = avg + alpha * (iter.next() - avg);      
-    }
-    return avg;    
+  public String toString() {
+    return xRange.toString() + ": " + feat.toString();
   }
-
 }

@@ -13,44 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.detection.features.classification;
+package edu.cmu.sv.modelinference.tools.detection.features;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Range;
 
+import edu.cmu.sv.modelinference.tools.detection.features.classification.AvgFeature;
+import edu.cmu.sv.modelinference.tools.detection.features.classification.Event;
+
 /**
  * @author Kasper Luckow
  *
  */
-public class AvgFeature implements EventFeature {
-  
-  private final double avg;
-  
-  public AvgFeature(double avg) {
-    this.avg = avg;
-  }
-  
-  public AvgFeature(double[] dataPoints) {
-    this(avg(dataPoints));
-  }
-  
-  public static double avg(double[] data) {
-    double sum = 0.0;
-    for(double d : data) {
-      sum += d;
-    }
-    return sum / (double)data.length;
-  }
-  
-  @Override
-  public double getData() {
-    return avg;
-  }
-  
-  @Override
-  public String toString() {
-    return "" + avg;
-  }
+public interface EventGenerator {
+  public List<Event> computeEvents(List<Range<Integer>> eventIntervals, double[] ys, int stepSize);
 }
