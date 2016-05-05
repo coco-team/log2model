@@ -1,29 +1,15 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
+apply plugin: 'application'
+
+// for the application plugin
+mainClassName = "edu.cmu.sv.modelinference.Main"
 
 group = 'edu.cmu.sv.modelinference'
 version = '0.0.1'
 
 description = "Log2model"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-task wrapper(type: Wrapper) {
-	 gradleVersion = '2.10' 
-}
-
-task fatJar(type: Jar) {
-	manifest {
-		attributes 'Implementation-Title': 'log2model',
-			'Implementation-Version': version
-	}
-	baseName = project.name + '-all'
-	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-	with jar
-}
-
 
 repositories {
     maven { url "http://repo.maven.apache.org/maven2" }
@@ -47,3 +33,12 @@ dependencies {
 
     testCompile group: 'org.testng', name: 'testng', version:'6.8'
 }
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName,
+            'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
+    }
+}
+
+
