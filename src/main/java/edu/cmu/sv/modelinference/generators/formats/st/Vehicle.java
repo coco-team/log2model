@@ -17,6 +17,9 @@ package edu.cmu.sv.modelinference.generators.formats.st;
 
 import java.util.Objects;
 
+/**
+ * @author Kasper Luckow
+ */
 public class Vehicle implements Copyable<Vehicle> {
 
   private final String id;

@@ -20,6 +20,9 @@ import java.io.IOException;
 import edu.cmu.sv.modelinference.generators.model.Model;
 import edu.cmu.sv.modelinference.generators.model.State;
 
+/**
+ * @author Kasper Luckow
+ */
 public interface ModelInferer<T extends State> {
   Model<T> generateModel(String logFile) throws IOException;
 }

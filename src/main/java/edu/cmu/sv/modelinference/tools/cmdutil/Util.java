@@ -22,6 +22,10 @@ import org.apache.commons.cli.ParseException;
 
 import edu.cmu.sv.modelinference.generators.formats.st.STModelInferer;
 
+/**
+ * @author Kasper Luckow
+ *
+ */
 public class Util {
   public static class GridPartitions {
     public int vert;

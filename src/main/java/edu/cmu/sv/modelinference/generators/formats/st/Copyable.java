@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 package edu.cmu.sv.modelinference.generators.formats.st;
-
+/**
+ * @author Kasper Luckow
+ */
 public interface Copyable<S> {
   public S copy();
 }

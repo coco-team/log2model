@@ -19,7 +19,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import edu.cmu.sv.modelinference.generators.model.State;
-
+/**
+ * @author Kasper Luckow
+ */
 public class TimedTrace<S extends State> implements Iterable<TimedState<S>>{
   private LinkedList<TimedState<S>> trace = new LinkedList<>();
   private final String id;

@@ -25,6 +25,9 @@ import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
+/**
+ * @author Kasper Luckow
+ */
 public class GridFactory<S extends Copyable<S>> {
 
   public static class Grid<T extends Copyable<T>> implements Copyable<Grid<T>> {

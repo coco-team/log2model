@@ -25,7 +25,9 @@ import edu.cmu.sv.modelinference.generators.formats.st.util.GridDimensionsFinder
 import edu.cmu.sv.modelinference.generators.formats.st.util.GridDimensionsFinder.Dimensions;
 import edu.cmu.sv.modelinference.generators.model.Model;
 import edu.cmu.sv.modelinference.generators.parser.SequentialLogReader;
-
+/**
+ * @author Kasper Luckow
+ */
 public class STModelInferer implements ModelInferer<GridState> {
   
   public static final int DEF_PARTITIONS = 2;

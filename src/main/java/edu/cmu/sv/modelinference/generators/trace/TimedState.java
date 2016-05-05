@@ -16,7 +16,9 @@
 package edu.cmu.sv.modelinference.generators.trace;
 
 import edu.cmu.sv.modelinference.generators.model.State;
-
+/**
+ * @author Kasper Luckow
+ */
 public class TimedState<S extends State> {
   private final S state;
   private double from = -1, to = -1;

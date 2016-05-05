@@ -16,7 +16,9 @@
 package edu.cmu.sv.modelinference.generators.ta;
 
 import com.google.common.collect.TreeMultiset;
-
+/**
+ * @author Kasper Luckow
+ */
 public class Range {
 
   private TreeMultiset<Integer> val;

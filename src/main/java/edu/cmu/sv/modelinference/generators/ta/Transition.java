@@ -20,7 +20,9 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import com.google.common.collect.TreeMultiset;
-
+/**
+ * @author Kasper Luckow
+ */
 public class Transition {
   
   
