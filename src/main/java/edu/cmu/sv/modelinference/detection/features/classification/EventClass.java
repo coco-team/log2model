@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.TreeMap;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.collect.SortedMultiset;
 
 /**
@@ -94,5 +96,14 @@ public class EventClass implements Iterable<Event> {
   @Override
   public Iterator<Event> iterator() {
     return this.events.iterator();
+  }
+  
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+      .add("id", id)
+      .add("events", events)
+      .add("avg feat", this.avgFeat)
+      .add("var feat", this.varianceFeat).toString();
   }
 }

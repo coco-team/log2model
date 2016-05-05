@@ -67,7 +67,7 @@ public class ClassificationXYRenderer extends XYLineAndShapeRenderer {
   
   @Override
   public Paint getItemPaint(int row, int col) {
-    EventClass cluster = eventRanges2Class.get(col*stepSize -1);
+    EventClass cluster = eventRanges2Class.get(col*stepSize + eventRanges2Class.span().lowerEndpoint() - 1);
     if(cluster != null) {
       Color clr = cluster2Color.get(cluster);
       return clr;
