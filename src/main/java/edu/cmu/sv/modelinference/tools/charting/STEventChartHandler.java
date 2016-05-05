@@ -50,6 +50,12 @@ public class STEventChartHandler implements LogHandler<ValueTrackerProducer<?, D
   private String flightName;
   private final Options cmdOpts;
   
+  
+  private static STEventChartHandler instance = new STEventChartHandler();
+  public static STEventChartHandler getInstance() {
+    return instance;
+  }
+  
   private STEventChartHandler() {
     this.cmdOpts = createCmdOptions();
   }

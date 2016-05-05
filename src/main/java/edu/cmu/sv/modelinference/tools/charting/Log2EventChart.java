@@ -25,6 +25,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.cmu.sv.modelinference.Main;
 import edu.cmu.sv.modelinference.detection.features.AvgEventGenerator;
 import edu.cmu.sv.modelinference.detection.features.EWMASmoothingFilter;
 import edu.cmu.sv.modelinference.detection.features.EventDetector;
@@ -44,11 +45,20 @@ import edu.cmu.sv.modelinference.tools.LogHandler;
 public class Log2EventChart implements LogHandler<Void> {
   private static final Logger logger = LoggerFactory.getLogger(Log2EventChart.class.getName());
 
-  private Set<LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>>> logHandlers = new HashSet<>();
+  private static final Log2EventChart instance = new Log2EventChart();
   
-  public Log2EventChart() {
-    logHandlers.add(new AREventChartHandler());
+  public static Log2EventChart getInstance() {
+    return instance;
   }
+
+  private static Set<LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>>> logHandlers = new HashSet<>();
+  
+  static {
+    logHandlers.add(AREventChartHandler.getInstance());
+    logHandlers.add(STEventChartHandler.getInstance());
+  }
+  
+  private Log2EventChart() { }
 
   @Override
   public String getHandlerName() {
@@ -101,11 +111,11 @@ public class Log2EventChart implements LogHandler<Void> {
     FeatureExtractor slopeExtractor = new RoCExtractor();
     
     //use event detector on features
-    EventDetector movingAvg = new MovingAverageEventDetector(3, 1);
+    EventDetector movingAvg = new MovingAverageEventDetector(2, 3);
 
     EventGenerator eventGenerator = new AvgEventGenerator();
     
-    EventClassifier classifier = new Clusterer1D(3, 10, 3000);
+    EventClassifier classifier = new Clusterer1D(5, 100, 3000);
     
     EventVisualizer.Builder bldr = new EventVisualizer.Builder(movingAvg,
               slopeExtractor, eventGenerator, classifier);

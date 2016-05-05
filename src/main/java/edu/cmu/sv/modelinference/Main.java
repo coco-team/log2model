@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -45,23 +46,32 @@ public class Main {
     logHandlers.add(handler);
   }
   
+  //Put all log handlers here. Not the most elegant solution
+  static {
+    logHandlers.add(Log2EventChart.getInstance());
+  }
+  
   private static final String LOG_FILE_ARG = "input";
   private static final String INPUT_TYPE_ARG = "type";
   private static final String TOOL_TYPE_ARG = "tool";
   
-  public static void main(String[] args) throws ParseException {
-    logHandlers.add(new Log2EventChart());
-    
+  public static void main(String[] args) {
     Options cmdOpts = createCmdOptions();
     
     CommandLineParser parser = new DefaultParser();
-    CommandLine cmd = parser.parse(cmdOpts, args, true);
+    CommandLine cmd = null;
+    try {
+      cmd = parser.parse(cmdOpts, args, true);
+    } catch(ParseException exp) {
+      HelpFormatter formatter = new HelpFormatter();
+      formatter.printHelp(Main.class.getName(), cmdOpts);
+      System.exit(-1);
+    }
     
     String inputType = cmd.getOptionValue(INPUT_TYPE_ARG);
     String tool = cmd.getOptionValue(TOOL_TYPE_ARG);
     String logFile = cmd.getOptionValue(LOG_FILE_ARG);
-    
-    
+
     LogHandler<Void> logHandler = null;
     boolean found = false;
     for(LogHandler<Void> lh : logHandlers) {
