@@ -8,26 +8,18 @@ Install prism (can be downloaded here: [PRISM Website](http://www.prismmodelchec
 Download [grappa](http://www2.research.att.com/~john/Grappa/grappa.tgz) (for prettyprinting), and copy the jar into the `lib` folder.
 Install [JUppaal](https://github.com/ksluckow/JUppaal) (for translation to TA), and copy the jar into the `lib` folder.
 
-Then, in the root directory of Model-inferencer, install it:
+To build `Log2model`:
 ```bash
 $ gradle build
 ```
-
-You can also get a fat jar with all dependencies:
+You can also build a distribution that generates start scripts etc:
 ```bash
-$ gradle fatjar
+$ gradle installDist
 ```
-
-You have to build the fatjar in order to use the supplied wrapper scripts (`log2model` and `log2chart` and ).
-
-## Usage 
-
-`log2model` can be interfaced from the command line. Execute
+The main entry point of `Log2model` can then be invoked: 
 ```bash
-$ ./log2model
+$ ./build/install/log2model/bin/log2model
 ```
-for usage. 
-
 
 ## Additional Tools
 You can also invoke the charting tool in a similar fashioner. Just execute:
@@ -43,11 +35,3 @@ Execute `python animator.py data.csv` to make the playback.
 Here `data.csv`is a file with comma-separated x and y values.
 `STCoordOutputter` can generate the `data.csv` for `animator.py`
 
-## TODO ##
-* make installation script
-* refactorings
-* Add notion of weighted (or probabilistc) transition, and nondeterministic transitions. Update visitor accordingly.
-* Fix how model variables are added and treatment of state variables. This should be the same...
-* Visitor relies on a visited variable being set in already visited state. This is ugly.
-* Fix naming of many of the classes
-* Fix ArrDepGridState -- shouldn't be composed of two gridstates
