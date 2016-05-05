@@ -4,5 +4,5 @@ if test -z "$JVM_FLAGS"; then
   JVM_FLAGS="-Xmx1024m -ea -Dlog4j.configuration=log4j.properties"
 fi
 
-java $JVM_FLAGS -cp "build/libs/log2model-all-0.9.0.jar" "edu.cmu.sv.modelinference.tools.charting.Log2EventChart" "$@"
+java $JVM_FLAGS -cp "build/libs/log2model-all-0.0.1.jar" "edu.cmu.sv.modelinference.Main" "$@"
 
