@@ -13,13 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.tools.detection.features.classification;
+package edu.cmu.sv.modelinference.tools.eventdetection;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Kasper Luckow
  *
  */
-public interface EventFeature {
+public class UnweightedRectangularSmoothingFilter extends RectangularSmoothingFilter {
+
+  public UnweightedRectangularSmoothingFilter() {
+    super();
+  }
   
-  public double getData();
+  public UnweightedRectangularSmoothingFilter(int windowSize) {
+    super(windowSize);
+  }
+  
+  @Override
+  protected double computeMean(List<Double> data) {
+    double mean = 0;
+    for(double d : data) {
+      mean += d;
+    }
+    return mean / (double)data.size();
+  }
 }

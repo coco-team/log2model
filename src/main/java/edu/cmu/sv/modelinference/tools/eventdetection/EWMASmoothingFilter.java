@@ -13,31 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.tools.detection.features;
+package edu.cmu.sv.modelinference.tools.eventdetection;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 /**
  * @author Kasper Luckow
  *
  */
-public class UnweightedRectangularSmoothingFilter extends RectangularSmoothingFilter {
-
-  public UnweightedRectangularSmoothingFilter() {
-    super();
-  }
+public class EWMASmoothingFilter extends RectangularSmoothingFilter {
+  private final double alpha;
   
-  public UnweightedRectangularSmoothingFilter(int windowSize) {
+  public EWMASmoothingFilter(int windowSize, double alpha) {
     super(windowSize);
+    checkArgument(alpha >= 0 && alpha <= 1.0);
+    this.alpha = alpha;
   }
   
   @Override
   protected double computeMean(List<Double> data) {
-    double mean = 0;
-    for(double d : data) {
-      mean += d;
+    Iterator<Double> iter = data.iterator();
+    double avg = iter.next();
+    while(iter.hasNext()) {
+      avg = avg + alpha * (iter.next() - avg);      
     }
-    return mean / (double)data.size();
+    return avg;    
   }
+
 }

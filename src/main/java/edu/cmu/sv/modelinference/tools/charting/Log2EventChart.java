@@ -28,16 +28,16 @@ import org.slf4j.LoggerFactory;
 import edu.cmu.sv.modelinference.Main;
 import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
 import edu.cmu.sv.modelinference.tools.LogHandler;
-import edu.cmu.sv.modelinference.tools.detection.features.AvgEventGenerator;
-import edu.cmu.sv.modelinference.tools.detection.features.EWMASmoothingFilter;
-import edu.cmu.sv.modelinference.tools.detection.features.EventDetector;
-import edu.cmu.sv.modelinference.tools.detection.features.EventGenerator;
-import edu.cmu.sv.modelinference.tools.detection.features.EventVisualizer;
-import edu.cmu.sv.modelinference.tools.detection.features.FeatureExtractor;
-import edu.cmu.sv.modelinference.tools.detection.features.MovingAverageEventDetector;
-import edu.cmu.sv.modelinference.tools.detection.features.RoCExtractor;
-import edu.cmu.sv.modelinference.tools.detection.features.classification.Clusterer1D;
-import edu.cmu.sv.modelinference.tools.detection.features.classification.EventClassifier;
+import edu.cmu.sv.modelinference.tools.eventdetection.AvgEventGenerator;
+import edu.cmu.sv.modelinference.tools.eventdetection.EWMASmoothingFilter;
+import edu.cmu.sv.modelinference.tools.eventdetection.EventDetector;
+import edu.cmu.sv.modelinference.tools.eventdetection.EventGenerator;
+import edu.cmu.sv.modelinference.tools.eventdetection.EventVisualizer;
+import edu.cmu.sv.modelinference.tools.eventdetection.FeatureExtractor;
+import edu.cmu.sv.modelinference.tools.eventdetection.MovingAverageEventDetector;
+import edu.cmu.sv.modelinference.tools.eventdetection.RoCExtractor;
+import edu.cmu.sv.modelinference.tools.eventdetection.classification.Clusterer1D;
+import edu.cmu.sv.modelinference.tools.eventdetection.classification.EventClassifier;
 
 /**
  * @author Kasper Luckow

@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.tools.detection.features.classification;
-
-import java.util.Collection;
+package edu.cmu.sv.modelinference.tools.eventdetection;
 
 /**
  * @author Kasper Luckow
  *
  */
-public interface EventClassifier {
-  public ClassificationResult classify(Collection<Event> events); 
+public interface EventDetector {
+  public PredictionModel computePredictionModel(double xs[], double ys[]);
 }

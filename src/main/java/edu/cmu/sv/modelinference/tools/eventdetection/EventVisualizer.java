@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.tools.detection.features;
+package edu.cmu.sv.modelinference.tools.eventdetection;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -42,11 +42,11 @@ import edu.cmu.sv.modelinference.tools.charting.ClassificationXYRenderer;
 import edu.cmu.sv.modelinference.tools.charting.DataChart;
 import edu.cmu.sv.modelinference.tools.charting.DataPointCollection;
 import edu.cmu.sv.modelinference.tools.charting.Log2EventChart;
-import edu.cmu.sv.modelinference.tools.detection.features.classification.ClassificationResult;
-import edu.cmu.sv.modelinference.tools.detection.features.classification.Event;
-import edu.cmu.sv.modelinference.tools.detection.features.classification.EventClass;
-import edu.cmu.sv.modelinference.tools.detection.features.classification.EventClassifier;
-import edu.cmu.sv.modelinference.tools.detection.features.classification.EventUtils;
+import edu.cmu.sv.modelinference.tools.eventdetection.classification.ClassificationResult;
+import edu.cmu.sv.modelinference.tools.eventdetection.classification.Event;
+import edu.cmu.sv.modelinference.tools.eventdetection.classification.EventClass;
+import edu.cmu.sv.modelinference.tools.eventdetection.classification.EventClassifier;
+import edu.cmu.sv.modelinference.tools.eventdetection.classification.EventUtils;
 
 /**
  * @author Kasper Luckow

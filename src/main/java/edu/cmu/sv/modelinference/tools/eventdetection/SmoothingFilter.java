@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.tools.detection.features;
+package edu.cmu.sv.modelinference.tools.eventdetection;
 
 /**
  * @author Kasper Luckow
  *
  */
-public interface EventDetector {
-  public PredictionModel computePredictionModel(double xs[], double ys[]);
+public interface SmoothingFilter {
+  public double[] smoothen(double[] xs, double[] ys);
 }

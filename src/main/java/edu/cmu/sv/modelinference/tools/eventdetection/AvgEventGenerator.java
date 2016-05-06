@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.tools.detection.features;
+package edu.cmu.sv.modelinference.tools.eventdetection;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Range;
 
-import edu.cmu.sv.modelinference.tools.detection.features.classification.AvgFeature;
-import edu.cmu.sv.modelinference.tools.detection.features.classification.Event;
+import edu.cmu.sv.modelinference.tools.eventdetection.classification.AvgFeature;
+import edu.cmu.sv.modelinference.tools.eventdetection.classification.Event;
 
 /**
  * @author Kasper Luckow
