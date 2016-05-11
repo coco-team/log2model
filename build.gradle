@@ -11,6 +11,10 @@ version = '0.0.1'
 
 description = "Log2model"
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
+}
+
 repositories {
     maven { url "http://repo.maven.apache.org/maven2" }
     mavenLocal()
