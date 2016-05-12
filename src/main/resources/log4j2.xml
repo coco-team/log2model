@@ -5,13 +5,16 @@ status="WARN">
     <Console name="Console" target="SYSTEM_OUT">
         <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
+        <File name="MyFile" fileName="logs/app.log">
+        <PatternLayout pattern="%d{yyyy-mm-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </File> 
 </Appenders>
 <Loggers>
     <Logger name="log4j.test.Log4jTest" level="trace">
-        <AppenderRef ref="Console"/>
+        <AppenderRef ref="MyFile"/>
     </Logger>
     <Root level="trace">
-        <AppenderRef ref="Console"/>
+        <AppenderRef ref="MyFile"/>
     </Root>
 </Loggers>
 </Configuration>
