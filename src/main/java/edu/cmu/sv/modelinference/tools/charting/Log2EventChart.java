@@ -25,6 +25,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.cmu.sv.modelinference.Log2Model;
 import edu.cmu.sv.modelinference.Main;
 import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
 import edu.cmu.sv.modelinference.tools.LogHandler;
@@ -45,9 +46,12 @@ import edu.cmu.sv.modelinference.tools.eventdetection.classification.EventClassi
 public class Log2EventChart implements LogHandler<Void> {
   private static final Logger logger = LoggerFactory.getLogger(Log2EventChart.class.getName());
 
-  private static final Log2EventChart instance = new Log2EventChart();
+  private static Log2EventChart instance = null;
   
   public static Log2EventChart getInstance() {
+    if(instance == null) {
+      instance = new Log2EventChart();
+    }
     return instance;
   }
 
@@ -115,7 +119,7 @@ public class Log2EventChart implements LogHandler<Void> {
 
     EventGenerator eventGenerator = new AvgEventGenerator();
     
-    EventClassifier classifier = new Clusterer1D(5, 100, 3000);
+    EventClassifier classifier = new Clusterer1D(6, 100, 3000);
     
     EventVisualizer.Builder bldr = new EventVisualizer.Builder(movingAvg,
               slopeExtractor, eventGenerator, classifier);

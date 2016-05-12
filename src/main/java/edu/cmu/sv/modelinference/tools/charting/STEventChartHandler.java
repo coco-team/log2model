@@ -51,8 +51,12 @@ public class STEventChartHandler implements LogHandler<ValueTrackerProducer<?, D
   private final Options cmdOpts;
   
   
-  private static STEventChartHandler instance = new STEventChartHandler();
+  private static STEventChartHandler instance = null;
+  
   public static STEventChartHandler getInstance() {
+    if(instance == null) {
+      instance = new STEventChartHandler();
+    }
     return instance;
   }
   

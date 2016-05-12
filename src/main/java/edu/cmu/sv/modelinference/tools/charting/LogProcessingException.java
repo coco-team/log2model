@@ -19,17 +19,21 @@ package edu.cmu.sv.modelinference.tools.charting;
  * @author Kasper Luckow
  */
 public class LogProcessingException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public LogProcessingException(String details) {
-		super(details);
-	}
+  public LogProcessingException(String details) {
+    super(details);
+  }
 
-	public LogProcessingException(Throwable t) {
-		super(t);
-	}
-	
-	public LogProcessingException(Exception e) {
-		super(e);
-	}
+  public LogProcessingException(Throwable t) {
+    super(t);
+  }
+
+  public LogProcessingException(Exception e) {
+    super(e);
+  }
+
+  public LogProcessingException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

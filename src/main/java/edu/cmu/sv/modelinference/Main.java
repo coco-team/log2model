@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import edu.cmu.sv.modelinference.tools.LogHandler;
 import edu.cmu.sv.modelinference.tools.charting.Log2EventChart;
 import edu.cmu.sv.modelinference.tools.charting.LogProcessingException;
+import edu.cmu.sv.modelinference.tools.cmdutil.Util;
 
 /**
  * @author Kasper Luckow
@@ -41,7 +42,7 @@ public class Main {
 
   public static final Logger logger = LoggerFactory.getLogger(Main.class);
   
-  private static Set<LogHandler<Void>> logHandlers = new HashSet<>();
+  private static Set<LogHandler<?>> logHandlers = new HashSet<>();
   public static void registerLogHandler(LogHandler<Void> handler) {
     logHandlers.add(handler);
   }
@@ -49,6 +50,7 @@ public class Main {
   //Put all log handlers here. Not the most elegant solution
   static {
     logHandlers.add(Log2EventChart.getInstance());
+    logHandlers.add(Log2Model.getInstance());
   }
   
   private static final String LOG_FILE_ARG = "input";
@@ -70,11 +72,11 @@ public class Main {
     
     String inputType = cmd.getOptionValue(INPUT_TYPE_ARG);
     String tool = cmd.getOptionValue(TOOL_TYPE_ARG);
-    String logFile = cmd.getOptionValue(LOG_FILE_ARG);
+    String logFile = cmd.getOptionValue(LOG_FILE_ARG).replaceFirst("^~",System.getProperty("user.home"));
 
-    LogHandler<Void> logHandler = null;
+    LogHandler<?> logHandler = null;
     boolean found = false;
-    for(LogHandler<Void> lh : logHandlers) {
+    for(LogHandler<?> lh : logHandlers) {
       if(lh.getHandlerName().equals(tool)) {
         logHandler = lh;
         found = true;
@@ -83,14 +85,14 @@ public class Main {
     }
     if(!found) {
       StringBuilder sb = new StringBuilder();
-      Iterator<LogHandler<Void>> logIter = logHandlers.iterator();
+      Iterator<LogHandler<?>> logIter = logHandlers.iterator();
       while(logIter.hasNext()) {
         sb.append(logIter.next().getHandlerName());
         if(logIter.hasNext())
           sb.append(", ");
       }
       logger.error("Did not find tool for arg " + tool);
-      throw new LogProcessingException("Supported tools: " + getSupportedToolsString());
+      throw new LogProcessingException("Supported tools: " + Util.getSupportedHandlersString(logHandlers));
     }
     logger.info("Using loghandler for logtype: " + logHandler.getHandlerName());
     
@@ -117,7 +119,7 @@ public class Main {
     
  
     Option toolOpts = Option.builder(TOOL_TYPE_ARG)
-        .argName(getSupportedToolsString())
+        .argName(Util.getSupportedHandlersString(logHandlers))
         .hasArg()
         .required()
         .desc("Specify which tool to use")
@@ -128,18 +130,5 @@ public class Main {
     options.addOption(input);
     options.addOption(inputType);
     return options;
-  }
-  
-  private static String getSupportedToolsString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<");
-    Iterator<LogHandler<Void>> logIter = logHandlers.iterator();
-    while(logIter.hasNext()) {
-      sb.append(logIter.next().getHandlerName());
-      if(logIter.hasNext())
-        sb.append(" | ");
-    }
-    sb.append(">");   
-    return sb.toString();
   }
 }

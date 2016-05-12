@@ -47,9 +47,12 @@ public class AREventChartHandler implements LogHandler<ValueTrackerProducer<?, D
   
   private final Options cmdOpts;
   
-  private static final AREventChartHandler instance = new AREventChartHandler();
+  private static AREventChartHandler instance = null;
   
   public static AREventChartHandler getInstance() {
+    if(instance == null) {
+      instance = new AREventChartHandler();
+    }
     return instance;
   }
 

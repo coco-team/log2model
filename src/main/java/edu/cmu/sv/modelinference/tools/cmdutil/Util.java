@@ -15,12 +15,16 @@
  */
 package edu.cmu.sv.modelinference.tools.cmdutil;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.cli.ParseException;
 
 import edu.cmu.sv.modelinference.generators.formats.st.STModelInferer;
+import edu.cmu.sv.modelinference.tools.LogHandler;
 
 /**
  * @author Kasper Luckow
@@ -60,5 +64,16 @@ public class Util {
       throw new ParseException("Dimensions must adhere to regex " + regex);
     }
     return parts;
+  }
+
+  public static String getSupportedHandlersString(Set<? extends LogHandler<?>> supportedHandlers) {
+    StringBuilder sb = new StringBuilder();
+    Iterator<? extends LogHandler<?>> logIter = supportedHandlers.iterator();
+    while(logIter.hasNext()) {
+      sb.append(logIter.next().getHandlerName());
+      if(logIter.hasNext())
+        sb.append(" | ");
+    }
+    return sb.toString();
   }
 }
