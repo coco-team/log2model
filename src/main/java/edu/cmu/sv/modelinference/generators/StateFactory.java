@@ -15,6 +15,7 @@
  */
 package edu.cmu.sv.modelinference.generators;
 
+import edu.cmu.sv.modelinference.generators.formats.st.GridState;
 import edu.cmu.sv.modelinference.generators.model.State;
 
 /**
@@ -24,4 +25,10 @@ public interface StateFactory<T extends LogEntry, S extends State> {
   public S generateState(S currState, T entry);
   public void addEntryToState(S currState, T entry);
   public boolean isNewState(S currState, T entry);
+  
+  //These will be removed eventually
+  @Deprecated
+  public S finalizeState(S currState);
+  @Deprecated
+  public S generateState();
 }

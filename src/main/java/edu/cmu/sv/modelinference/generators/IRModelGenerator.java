@@ -18,6 +18,8 @@ package edu.cmu.sv.modelinference.generators;
 import java.io.File;
 import java.io.IOException;
 
+import edu.cmu.sv.modelinference.generators.formats.st.GridState;
+import edu.cmu.sv.modelinference.generators.formats.st.STGridStateFactory;
 import edu.cmu.sv.modelinference.generators.model.Model;
 import edu.cmu.sv.modelinference.generators.model.State;
 import edu.cmu.sv.modelinference.generators.model.Transition;
@@ -53,22 +55,26 @@ public final class IRModelGenerator<T extends LogEntry, S extends State> impleme
     return model;
   }
   
+  //This is so messy I almost cannot believe it
   @Override
   public void process(T entry) {
-    if(isNewState(entry)) {
-      if(currState != null) {
-        //this seems a little bit odd but is due to how equals is implemented now
-        S s = this.model.getState(currState); 
-        if(s != null)
-          currState = s;
-        else
-          this.model.addState(currState);
-      }
+    if(isNewState(entry) && currState != null) {
+      S genState = stateGenerator.finalizeState(currState);
+      S tempState = this.model.getState(genState); 
+      if(tempState == null) {
+        this.model.addState(genState);
+        currState = genState;
+      } else
+        currState = tempState;
+      
       if(prevState != null && currState != null)
         generateTransition(prevState, currState);
+      
       prevState = currState;
-      currState = stateGenerator.generateState(currState, entry);
+      currState = stateGenerator.generateState();
     }
+    if(currState == null)
+      currState = stateGenerator.generateState();
     if(entry != null)
       stateGenerator.addEntryToState(currState, entry);    
   }

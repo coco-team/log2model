@@ -15,6 +15,10 @@
  */
 package edu.cmu.sv.modelinference.generators.formats.st;
 
+import java.util.Iterator;
+
+import edu.cmu.sv.modelinference.generators.formats.st.GridFactory.Grid.Cell;
+import edu.cmu.sv.modelinference.generators.model.Assignment;
 import edu.cmu.sv.modelinference.generators.model.State;
 
 /**
@@ -26,14 +30,32 @@ public class GridState extends State {
 
   public GridState(GridFactory.Grid<Vehicle> grid) {
     this.grid = grid;
+    for(Cell<Vehicle> cell : grid.getCells()) {
+      Assignment<Integer> assign = new Assignment<Integer>("q_" + cell.getX() + "_" + cell.getY(),
+          (cell.getData() == null) ?
+              0 :
+              cell.getData().size());
+      this.addAssignment(assign);
+    }
   }
   
   public GridFactory.Grid<Vehicle> getGrid() {
     return this.grid;
   }
   
+  public String toSimpleString() {
+    StringBuilder sb = new StringBuilder();
+    Iterator<Assignment<?>> assignmentIter = this.assignments.iterator();
+    while(assignmentIter.hasNext()) {
+      sb.append(assignmentIter.next().toString());
+      if(assignmentIter.hasNext())
+        sb.append(", ");
+    }
+    return sb.toString();
+  }
+  
   @Override
   public String toString() {
-    return this.grid.toString();
+    return toSimpleString();//this.grid.toString();
   }
 }

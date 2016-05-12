@@ -45,6 +45,23 @@ public class STGridStateFactory implements STStateFactory<GridState> {
     this.gridFactory = new GridFactory<>(lowerLeft, upperRight, horizPartitions, vertPartitions);
   }
 
+  
+  //This will, along with finalizeState be removed eventually when I get time
+  @Override
+  public GridState generateState() {
+    return new GridState(gridFactory.build());
+  }
+  
+  //This is really ugly. It would be much better to have
+  //a state builder in ir model generator that is continuously
+  //updated with entries, and then, upon seeing a new state,
+  //build it as an immutable object. This here is ugly, and
+  //only meant as a quick fix
+  @Override
+  public GridState finalizeState(GridState currState) {
+    return new GridState(currState.getGrid().copy());
+  }
+  
   @Override
   public GridState generateState(GridState currState, STEntry entry) {
     Grid<Vehicle> newGrid = null;

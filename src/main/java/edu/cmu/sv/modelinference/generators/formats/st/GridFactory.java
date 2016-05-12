@@ -32,6 +32,29 @@ public class GridFactory<S extends Copyable<S>> {
 
   public static class Grid<T extends Copyable<T>> implements Copyable<Grid<T>> {
     
+    public static class Cell<T> {
+      private final int x, y;
+      private final Collection<T> data;
+      
+      public Cell(int x, int y, Collection<T> data) {
+        this.x = x;
+        this.y = y;
+        this.data = data;
+      }
+
+      public int getX() {
+        return x;
+      }
+
+      public int getY() {
+        return y;
+      }
+      
+      public Collection<T> getData() {
+        return data;
+      }
+    }
+    
     private final NavigableMap<Double, NavigableMap<Double, Collection<T>>> xTree;
     private final Map<T, Collection<T>> obj2coll;
     
@@ -42,6 +65,20 @@ public class GridFactory<S extends Copyable<S>> {
     private Grid(NavigableMap<Double, NavigableMap<Double, Collection<T>>> xTree, Map<T, Collection<T>> obj2coll) {
       this.xTree = xTree;
       this.obj2coll = obj2coll;
+    }
+    
+    public Collection<Cell<T>> getCells() {
+      Set<Cell<T>> cells = new HashSet<>(); 
+      int xCount = 0;
+      for(Entry<Double, NavigableMap<Double, Collection<T>>> x : xTree.entrySet()) {
+        int yCount = 0;
+        for(Entry<Double, Collection<T>> y : x.getValue().entrySet()) {
+          cells.add(new Cell<>(xCount, yCount, y.getValue()));
+          yCount++;
+        }
+        xCount++;
+      }
+      return cells;
     }
     
     public Collection<T> getCell(Coord2d coord) {
@@ -149,7 +186,7 @@ public class GridFactory<S extends Copyable<S>> {
         xCount++;
       }
       String s = sb.toString();
-      return s.substring(0, s.length()-2); //ugly
+      return (s.length() > 2) ? s.substring(0, s.length()-2) : s; //ugly
     }
   }
   
