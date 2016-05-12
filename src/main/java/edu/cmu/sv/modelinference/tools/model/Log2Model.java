@@ -122,7 +122,7 @@ public class Log2Model implements LogHandler<Void> {
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = null;
     try {
-      cmd = parser.parse(cmdOpts, additionalCmdArgs, false);
+      cmd = parser.parse(cmdOpts, additionalCmdArgs, true);
     } catch(ParseException exp) {
       logger.error(exp.getMessage());
       System.err.println(exp.getMessage());

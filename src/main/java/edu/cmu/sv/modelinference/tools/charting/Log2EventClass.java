@@ -54,13 +54,13 @@ import edu.cmu.sv.modelinference.tools.model.Log2Model;
 public class Log2EventClass implements LogHandler<Void> {
   private static final Logger logger = LoggerFactory.getLogger(Log2EventClass.class.getName());
 
-  private static final String CLUSTERS_ARG = "clusters";
+  private static final String CLASSES_ARG = "classes";
   private static final String ALARM_ARG = "alarm";
   private static final String MOVING_AVG_DETECT_SIZE_ARG = "mad";
   private static final String MOVING_AVG_FEAT_SIZE_ARG = "maf";
   private static final String HELP_ARG = "help";
   
-  private static final int DEFAULT_CLUSTERS = 6;
+  private static final int DEFAULT_CLASSES = 6;
   private static final int DEFAULT_ALARM_LEVEL = 3;
   private static final int DEFAULT_DETECT_WINDOWSIZE = 2;
   private static final int DEFAULT_FEAT_WINDOWSIZE = 3;
@@ -97,8 +97,8 @@ public class Log2EventClass implements LogHandler<Void> {
     Options options = new Options();
     
     Option help = new Option(HELP_ARG, "print this message");    
-    Option clusters = Option.builder(CLUSTERS_ARG).argName("number").hasArg()
-        .desc("Specify number of clusters/event classes. Default is " + DEFAULT_CLUSTERS).build();
+    Option clusters = Option.builder(CLASSES_ARG).argName("number").hasArg()
+        .desc("Specify number of clusters/event classes. Default is " + DEFAULT_CLASSES).build();
     Option alarm = Option.builder(ALARM_ARG).argName("number").hasArg()
         .desc("Specify size of upper and lower control limits in terms of number of std dev from expected val. Default is " + DEFAULT_ALARM_LEVEL).build();
     Option mvRaw = Option.builder(MOVING_AVG_DETECT_SIZE_ARG).argName("number").hasArg()
@@ -151,7 +151,7 @@ public class Log2EventClass implements LogHandler<Void> {
     }
     logger.info("Using loghandler for logtype: " + logHandler.getHandlerName());
     
-    this.clusterNum = (cmd.hasOption(CLUSTERS_ARG)) ? Integer.parseInt(cmd.getOptionValue(CLUSTERS_ARG)) : DEFAULT_CLUSTERS;
+    this.clusterNum = (cmd.hasOption(CLASSES_ARG)) ? Integer.parseInt(cmd.getOptionValue(CLASSES_ARG)) : DEFAULT_CLASSES;
     this.alarmSize = (cmd.hasOption(ALARM_ARG)) ? Integer.parseInt(cmd.getOptionValue(ALARM_ARG)) : DEFAULT_ALARM_LEVEL;
     this.movingAvgDetection = (cmd.hasOption(MOVING_AVG_DETECT_SIZE_ARG)) ? Integer.parseInt(cmd.getOptionValue(MOVING_AVG_DETECT_SIZE_ARG)) : DEFAULT_DETECT_WINDOWSIZE;
     this.movingAvgSizeFeat = (cmd.hasOption(MOVING_AVG_FEAT_SIZE_ARG)) ? Integer.parseInt(cmd.getOptionValue(MOVING_AVG_FEAT_SIZE_ARG)) : DEFAULT_FEAT_WINDOWSIZE;

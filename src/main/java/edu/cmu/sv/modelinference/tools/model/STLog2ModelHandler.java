@@ -23,6 +23,8 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.cmu.sv.modelinference.generators.ModelInferer;
 import edu.cmu.sv.modelinference.generators.formats.st.GridState;
@@ -39,6 +41,7 @@ import edu.cmu.sv.modelinference.tools.cmdutil.Util.GridPartitions;
  *
  */
 public class STLog2ModelHandler implements LogHandler<Model<?>> {
+  private static final Logger logger = LoggerFactory.getLogger(STLog2ModelHandler.class.getName());
 
   private static final String GRID_DIM = "dim";
   
@@ -75,11 +78,13 @@ public class STLog2ModelHandler implements LogHandler<Model<?>> {
   @Override
   public Model<?> process(String logFile, String logType, String[] additionalCmdArgs) throws LogProcessingException {
     CommandLineParser parser = new DefaultParser();
-    CommandLine cmd;
+    CommandLine cmd = null;
     try {
       cmd = parser.parse(cmdOpts, additionalCmdArgs, false);
-    } catch (ParseException e) {
-      throw new LogProcessingException(e);
+    } catch(ParseException exp) {
+      logger.error(exp.getMessage());
+      System.err.println(exp.getMessage());
+      Util.printHelpAndExit(STLog2ModelHandler.class, cmdOpts);
     }
     
     Model<?> model = null;
