@@ -7,7 +7,7 @@ Install prism (can be downloaded here: [PRISM Website](http://www.prismmodelchec
 Download [grappa](http://www2.research.att.com/~john/Grappa/grappa.tgz) (for prettyprinting), and copy the jar into the `lib` folder.
 Install [JUppaal](https://github.com/ksluckow/JUppaal) (for translation to TA), and copy the jar into the `lib` folder.
 
-Please install Gradle on your system. Alternatively, use the supplied Gradle wrapper scripts `gradlew` (Linux/Mac) and `gradlew.bat` (Windows) in the following.
+If you don't have Gradle installed, use the supplied Gradle wrapper scripts `gradlew` (Linux/Mac) and `gradlew.bat` (Windows) in the following.
 
 To build `Log2model`:
 ```bash
