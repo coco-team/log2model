@@ -64,22 +64,6 @@ public class PrismModelChecker extends ModelCheckerAdapter<ModulesFile, String> 
 
   private ModulesFile modulesFile;
   private Module module;
-  /*
-	@Override
-	protected String getModelAsString() {
-		return this.modulesFile.toString();
-	}
-
-	@Override
-	protected String getModelExtension() {
-		return ".prism";
-	}
-
-	@Override
-	protected String getPropertiesExtension() {
-		return ".props";
-	}
-   */
   
   @Override
   public void initModelGenerator(Model<?> model) {
@@ -139,7 +123,7 @@ public class PrismModelChecker extends ModelCheckerAdapter<ModulesFile, String> 
 
   @Override
   public void finishModelGenerator() {
-    //Anything to do
+    //Nothing to do
   }
 
   public static ModulesFile getModulesFileTemplate() {

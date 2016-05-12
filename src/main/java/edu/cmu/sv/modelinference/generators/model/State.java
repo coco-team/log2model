@@ -37,6 +37,13 @@ public class State implements ModelElement {
 
   private boolean isVisited = false;
 
+  //Instead of relying on a "stateful" visitor
+  //where we need to reset the visited flag, iterate
+  //over the states instead because this is ugly
+  public void setVisited(boolean flag) {
+    this.isVisited = flag;
+  }
+  
   @Override
   public void accept(ModelVisitor visitor) {
     if(!isVisited) {

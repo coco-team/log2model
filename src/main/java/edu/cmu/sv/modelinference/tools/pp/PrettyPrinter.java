@@ -51,6 +51,8 @@ public class PrettyPrinter implements ModelVisitor {
 	}
 	
 	public void printModel(String outputPath, Format format) {
+	   for(State s : this.model.getStates())
+	      s.setVisited(false);
 		this.model.accept(this);
 		
 		//TODO: This is super ugly....

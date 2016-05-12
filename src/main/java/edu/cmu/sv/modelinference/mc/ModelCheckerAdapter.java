@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import edu.cmu.sv.modelinference.generators.model.Model;
 import edu.cmu.sv.modelinference.generators.model.ModelVisitor;
+import edu.cmu.sv.modelinference.generators.model.State;
 
 /**
  * @author Kasper Luckow
@@ -27,6 +28,8 @@ import edu.cmu.sv.modelinference.generators.model.ModelVisitor;
 public abstract class ModelCheckerAdapter<T, S> implements ModelVisitor {
 	
 	public ModelAdapter<T> generateModel(Model<?> irModel) {
+	  for(State s : irModel.getStates())
+	    s.setVisited(false);
 	  initModelGenerator(irModel);
 	  irModel.accept(this);
 	  finishModelGenerator();
