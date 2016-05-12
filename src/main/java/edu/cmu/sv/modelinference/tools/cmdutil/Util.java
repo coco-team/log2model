@@ -21,8 +21,11 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import edu.cmu.sv.modelinference.Main;
 import edu.cmu.sv.modelinference.generators.formats.st.STModelInferer;
 import edu.cmu.sv.modelinference.tools.LogHandler;
 
@@ -75,5 +78,11 @@ public class Util {
         sb.append(" | ");
     }
     return sb.toString();
+  }
+  
+  public static void printHelpAndExit(Class<?> clz, Options opts) {
+    HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp(Main.class.getName(), opts);
+    System.exit(-1);
   }
 }

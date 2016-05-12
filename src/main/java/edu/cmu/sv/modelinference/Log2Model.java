@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -118,18 +119,21 @@ public class Log2Model implements LogHandler<Void> {
     Stopwatch sw = Stopwatch.createStarted();
     
     CommandLineParser parser = new DefaultParser();
-    CommandLine cmd;
+    CommandLine cmd = null;
     try {
       cmd = parser.parse(cmdOpts, additionalCmdArgs, false);
-    } catch (ParseException e) {
-      throw new LogProcessingException(e);
+    } catch(ParseException exp) {
+      logger.error(exp.getMessage());
+      System.err.println(exp.getMessage());
+      Util.printHelpAndExit(Log2Model.class, cmdOpts);
     }
     
     boolean runModelChecker = cmd.hasOption(RUN_MODEL_CHECKER_ARG);
     if(runModelChecker && !cmd.hasOption(PROPERTIES_ARG)) {
       String err = "Properties needed when executing model checker directly.";
       logger.error(err);
-      throw new LogProcessingException(err + " Add argument " + PROPERTIES_ARG);
+      System.err.println(err + " Add argument " + PROPERTIES_ARG);
+      Util.printHelpAndExit(Log2Model.class, cmdOpts);
     }
     
     LogHandler<Model<?>> intermediateModelHandler = null;
@@ -150,7 +154,8 @@ public class Log2Model implements LogHandler<Void> {
           sb.append(", ");
       }
       logger.error("Did not find intermediate model generator for log type " + logType);
-      throw new LogProcessingException("Supported log handlers: " + sb.toString());
+      System.err.println("Supported log handlers: " + sb.toString());
+      Util.printHelpAndExit(Log2Model.class, cmdOpts);
     }
     logger.info("Using intemediate model generator for logtype: " + intermediateModelHandler.getHandlerName());
     
@@ -174,7 +179,8 @@ public class Log2Model implements LogHandler<Void> {
           sb.append(", ");
       }
       logger.error("Did not find handler for model checker type " + logType);
-      throw new LogProcessingException("Supported model checkers: " + sb.toString());
+      System.err.println("Supported model checkers: " + sb.toString());
+      Util.printHelpAndExit(Log2Model.class, cmdOpts);
     }
     logger.info("Using model checker for: " + modelCheckerHandler.getHandlerName());
     
@@ -187,21 +193,21 @@ public class Log2Model implements LogHandler<Void> {
     
     ModelCheckerAdapter<?, ?> modelChecker = modelCheckerHandler.process(logFile, logType, cmd.getArgs());
     logger.info("Generating model checker took: " + sw.elapsed(TimeUnit.MILLISECONDS) + "ms");
-//    
-//    if(runModelChecker) {
-//      throw new LogProcessingException("Running model checker is not supported yet.");
-//      //String props = cmd.getOptionValue(PROPERTIES_ARG);
-//      //modelChecker.executeModelChecker(irModel, properties);
-//    } else {
-//      ModelAdapter<?> model = modelChecker.generateModel(irmodel);
-//      logger.info("Generating final model took: " + sw.elapsed(TimeUnit.MILLISECONDS) + "ms");
-//      logger.info("Saving model to " + outputPath);
-//      try {
-//        model.writeModelToFile(outputPath);
-//      } catch (IOException e) {
-//        throw new LogProcessingException(e);
-//      }
-//    }
+    
+    if(runModelChecker) {
+      throw new LogProcessingException("Running model checker is not supported yet.");
+      //String props = cmd.getOptionValue(PROPERTIES_ARG);
+      //modelChecker.executeModelChecker(irModel, properties);
+    } else {
+      ModelAdapter<?> model = modelChecker.generateModel(irmodel);
+      logger.info("Generating final model took: " + sw.elapsed(TimeUnit.MILLISECONDS) + "ms");
+      logger.info("Saving model to " + outputPath);
+      try {
+        model.writeModelToFile(outputPath);
+      } catch (IOException e) {
+        throw new LogProcessingException(e);
+      }
+    }
     
     if(cmd.hasOption(TO_DOT_ARG)) {
       PrettyPrinter p = new PrettyPrinter(irmodel);

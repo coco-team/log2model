@@ -47,7 +47,7 @@ public class Main {
     logHandlers.add(handler);
   }
   
-  //Put all log handlers here. Not the most elegant solution
+  //Put all log handlers here.
   static {
     logHandlers.add(Log2EventChart.getInstance());
     logHandlers.add(Log2Model.getInstance());
@@ -65,9 +65,9 @@ public class Main {
     try {
       cmd = parser.parse(cmdOpts, args, true);
     } catch(ParseException exp) {
-      HelpFormatter formatter = new HelpFormatter();
-      formatter.printHelp(Main.class.getName(), cmdOpts);
-      System.exit(-1);
+      logger.error(exp.getMessage());
+      System.err.println(exp.getMessage());
+      Util.printHelpAndExit(Main.class, cmdOpts);
     }
     
     String inputType = cmd.getOptionValue(INPUT_TYPE_ARG);
@@ -92,11 +92,12 @@ public class Main {
           sb.append(", ");
       }
       logger.error("Did not find tool for arg " + tool);
-      throw new LogProcessingException("Supported tools: " + Util.getSupportedHandlersString(logHandlers));
+      
+      System.err.println("Supported tools: " + Util.getSupportedHandlersString(logHandlers));
+      Util.printHelpAndExit(Main.class, cmdOpts);
     }
     logger.info("Using loghandler for logtype: " + logHandler.getHandlerName());
-    
-    
+
     logHandler.process(logFile, inputType, cmd.getArgs());
   }
   
@@ -116,15 +117,12 @@ public class Main {
                           .required()
                           .build();
     
-    
- 
     Option toolOpts = Option.builder(TOOL_TYPE_ARG)
         .argName(Util.getSupportedHandlersString(logHandlers))
         .hasArg()
         .required()
         .desc("Specify which tool to use")
         .build();
-    
 
     options.addOption(toolOpts);
     options.addOption(input);
