@@ -33,6 +33,8 @@ import edu.cmu.sv.modelinference.tools.LogHandler;
 import edu.cmu.sv.modelinference.tools.charting.Log2EventChart;
 import edu.cmu.sv.modelinference.tools.charting.LogProcessingException;
 import edu.cmu.sv.modelinference.tools.cmdutil.Util;
+import edu.cmu.sv.modelinference.tools.model.Log2Model;
+import edu.cmu.sv.modelinference.tools.traces.Log2Traces;
 
 /**
  * @author Kasper Luckow
@@ -50,12 +52,15 @@ public class Main {
   //Put all log handlers here.
   static {
     logHandlers.add(Log2EventChart.getInstance());
+    logHandlers.add(Log2Traces.getInstance());
     logHandlers.add(Log2Model.getInstance());
   }
   
   private static final String LOG_FILE_ARG = "input";
   private static final String INPUT_TYPE_ARG = "type";
   private static final String TOOL_TYPE_ARG = "tool";
+
+  private static final String HELP_ARG = "help";
   
   public static void main(String[] args) {
     Options cmdOpts = createCmdOptions();
@@ -103,6 +108,8 @@ public class Main {
   
   private static Options createCmdOptions() {
     Options options = new Options();
+    Option help = new Option(HELP_ARG, "print this message");
+    
     Option inputType = Option.builder(INPUT_TYPE_ARG)
         .argName("Log type (tool dependent)")
         .hasArg()
@@ -124,6 +131,7 @@ public class Main {
         .desc("Specify which tool to use")
         .build();
 
+    options.addOption(help);
     options.addOption(toolOpts);
     options.addOption(input);
     options.addOption(inputType);

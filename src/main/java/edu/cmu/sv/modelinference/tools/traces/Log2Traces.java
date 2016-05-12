@@ -13,139 +13,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference.tools;
+package edu.cmu.sv.modelinference.tools.traces;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RefineryUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.cmu.sv.modelinference.generators.LogEntryFilter;
-import edu.cmu.sv.modelinference.generators.ModelInferer;
-import edu.cmu.sv.modelinference.generators.formats.st.Coord2d;
 import edu.cmu.sv.modelinference.generators.formats.st.GridState;
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
-import edu.cmu.sv.modelinference.generators.formats.st.STGridStateFactory;
-import edu.cmu.sv.modelinference.generators.formats.st.STModelInferer;
-import edu.cmu.sv.modelinference.generators.formats.st.STParser;
-import edu.cmu.sv.modelinference.generators.formats.st.STValueTracker.FIELD;
-import edu.cmu.sv.modelinference.generators.formats.st.util.GridDimensionsFinder;
-import edu.cmu.sv.modelinference.generators.formats.st.util.GridDimensionsFinder.Dimensions;
-import edu.cmu.sv.modelinference.generators.parser.LogReader;
-import edu.cmu.sv.modelinference.generators.parser.SequentialLogReader;
 import edu.cmu.sv.modelinference.generators.trace.TimedTrace;
-import edu.cmu.sv.modelinference.generators.trace.TraceGenerator;
+import edu.cmu.sv.modelinference.tools.LogHandler;
+import edu.cmu.sv.modelinference.tools.charting.LogProcessingException;
 import edu.cmu.sv.modelinference.tools.cmdutil.Util;
-import edu.cmu.sv.modelinference.tools.cmdutil.Util.GridPartitions;
+import edu.cmu.sv.modelinference.tools.model.Log2Model;
 
 /**
  * @author Kasper Luckow
  */
-public class Log2Traces {
+public class Log2Traces implements LogHandler<Void> {
   private static final String HELP_ARG = "help";
-  private static final String INPUT_ARG = "i";
-  private static final String INPUT_TYPE_ARG = "t";
-  private static final String ADDITIONAL_INPUT_TYPE_ARG = "a";
+  private static final String OUTPUT_ARG = "o";
   
   private static final Logger logger = LoggerFactory.getLogger(Log2Traces.class.getName());
       
+  private static Set<LogHandler<Collection<TimedTrace<GridState>>>> loghandlers = new HashSet<>();
   
-  public static void main(String[] args) throws IOException, ParseException {    
-    Options options = createCmdOptions();
-    
-    CommandLineParser parser = new DefaultParser();
-    CommandLine cmd = null;
-    try {
-      cmd = parser.parse(options, args);
-    } catch(ParseException exp) {
-      printHelpAndExit(options);
-    }
-    
-    if(cmd.hasOption(HELP_ARG)) {
-      printHelpAndExit(options);
-    }
-    
-    String logFilePath = null;
-    if(cmd.hasOption(INPUT_ARG)) {
-      logFilePath = cmd.getOptionValue(INPUT_ARG);
-    } else {
-      printHelpAndExit(options);
-    }
-    
-    //use enums instead
-    String logType = "";
-    
-    //When options are required (required() called in option builder), do
-    //we need to check hasValue, or will the parser simply throw an exception
-    //if the option is not provided?
-    if(cmd.hasOption(INPUT_TYPE_ARG)) {
-      logType = cmd.getOptionValue(INPUT_TYPE_ARG);
-    } else
-      printHelpAndExit(options);
-    
-    long start = System.currentTimeMillis();
-    
-    //Expand this to be more pluggable. ugly
-    switch(logType.toLowerCase()) {
-    case "st":
-      GridPartitions parts = null;
-      if(cmd.hasOption(ADDITIONAL_INPUT_TYPE_ARG)) {
-        String partStr = cmd.getOptionValue(ADDITIONAL_INPUT_TYPE_ARG).trim();
-        parts = Util.extractGridPartitions(partStr);
-      } else
-        parts = GridPartitions.createDefault();
-      
-      LogEntryFilter<STEntry> filter = LogEntryFilter.<STEntry>EVERYTHING();
-      
-      LogReader<STEntry> reader = new SequentialLogReader<>(new STParser(), filter);
-      GridDimensionsFinder d = new GridDimensionsFinder();
-      Dimensions dim = d.start(new File(logFilePath));
-      STGridStateFactory stateGen = new STGridStateFactory(
-          new Coord2d(dim.minX, dim.minY), 
-          new Coord2d(dim.maxX, dim.maxY), 
-          parts.horiz, 
-          parts.vert);
-      
-      TraceGenerator<STEntry, GridState> traceGenerator = new TraceGenerator<>(reader, stateGen);
-      Collection<TimedTrace<GridState>> traces = traceGenerator.computeTraces(new File(logFilePath));
-      PrintWriter pw = new PrintWriter(new File("./bla.txt"));
-      for(TimedTrace<GridState> trace : traces) {
-
-        pw.println(trace.toString());
-        //System.out.println(trace.toString());
-      }
-      pw.close();
-      
-      break;
-    case "sierra":
-    case "autoresolver":
-    case "rp":
-      default:
-        logger.error("Unsupported input type");
-        printHelpAndExit(options);
-    }
-    
-    logger.info("Done generating traces");
-    logger.info("Took: " + (System.currentTimeMillis() - start));
+  static {
+    loghandlers.add(STLog2TracesHandler.getInstance());
   }
   
-  private static void printHelpAndExit(Options options) {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Log2Traces.class.getName(), options);
-    System.exit(0);
+  private static Log2Traces instance = null;
+  
+  public static Log2Traces getInstance() {
+    if(instance == null) {
+      instance = new Log2Traces();
+    }
+    return instance;
+  }
+  
+  private Options cmdOpts;
+  
+  private Log2Traces() {
+    cmdOpts = createCmdOptions();
   }
   
   public static Options createCmdOptions() {
@@ -153,26 +73,71 @@ public class Log2Traces {
     
     Option help = new Option(HELP_ARG, "print this message");
 
-    Option inputType = Option.builder(INPUT_TYPE_ARG).argName("st | autoresolver")
-        .hasArg()
-        .desc("Specify log type")
-        .required()
-        .build();
-    
-    Option addOpts = Option.builder(ADDITIONAL_INPUT_TYPE_ARG).argName("Additional options").hasArg()
-        .desc("Additional input type options").build();
-    
-    Option input = Option.builder(INPUT_ARG).argName("file")
+    Option output = Option.builder(OUTPUT_ARG).argName("file")
                                 .hasArg()
-                                .desc("Specify input file.")
+                                .desc("Specify output file.")
                                 .required()
                                 .build();
 
-
-    options.addOption(inputType);
-    options.addOption(addOpts);
     options.addOption(help);
-    options.addOption(input);
+    options.addOption(output);
     return options;
+  }
+
+  @Override
+  public String getHandlerName() {
+    return "traces";
+  }
+
+  @Override
+  public Void process(String logFile, String logType, String[] additionalCmdArgs) throws LogProcessingException {
+    CommandLineParser parser = new DefaultParser();
+    CommandLine cmd = null;
+    try {
+      cmd = parser.parse(cmdOpts, additionalCmdArgs, true);
+    } catch(ParseException exp) {
+      logger.error(exp.getMessage());
+      System.err.println(exp.getMessage());
+      Util.printHelpAndExit(Log2Traces.class, cmdOpts);
+    }
+    
+    if(cmd.hasOption(HELP_ARG))
+      Util.printHelpAndExit(Log2Traces.class, cmdOpts, 0);
+    
+
+    LogHandler<Collection<TimedTrace<GridState>>> logHandler = null;
+    boolean found = false;
+    for(LogHandler<Collection<TimedTrace<GridState>>> lh : loghandlers) {
+      if(lh.getHandlerName().equals(logType)) {
+        logHandler = lh;
+        found = true;
+        break;
+      }
+    }
+    if(!found) {
+      StringBuilder sb = new StringBuilder();
+      Iterator<LogHandler<Collection<TimedTrace<GridState>>>> logIter = loghandlers.iterator();
+      while(logIter.hasNext()) {
+        sb.append(logIter.next().getHandlerName());
+        if(logIter.hasNext())
+          sb.append(", ");
+      }
+      logger.error("Did not find loghandler for " + logType);
+      System.err.println("Supported log handlers: " + sb.toString());
+      Util.printHelpAndExit(Log2Traces.class, cmdOpts);
+    }
+
+    String outputPath = cmd.getOptionValue(OUTPUT_ARG);
+    
+    Collection<TimedTrace<GridState>> traces = logHandler.process(logFile, logType, cmd.getArgs());
+
+    try(PrintWriter pw = new PrintWriter(new File(outputPath))) {
+      for(TimedTrace<GridState> trace : traces) {
+        pw.println(trace.toString());
+      }
+    } catch (FileNotFoundException e) {
+      throw new LogProcessingException(e);
+    }  
+    return null;
   }
 }

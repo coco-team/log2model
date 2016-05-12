@@ -81,8 +81,12 @@ public class Util {
   }
   
   public static void printHelpAndExit(Class<?> clz, Options opts) {
+    printHelpAndExit(clz, opts, -1);
+  }
+  
+  public static void printHelpAndExit(Class<?> clz, Options opts, int exitVal) {
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Main.class.getName(), opts);
-    System.exit(-1);
+    System.exit(exitVal);
   }
 }

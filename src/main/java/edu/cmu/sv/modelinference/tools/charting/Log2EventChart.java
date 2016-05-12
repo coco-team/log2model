@@ -22,13 +22,20 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.cmu.sv.modelinference.Log2Model;
 import edu.cmu.sv.modelinference.Main;
 import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
 import edu.cmu.sv.modelinference.tools.LogHandler;
+import edu.cmu.sv.modelinference.tools.cmdutil.Util;
 import edu.cmu.sv.modelinference.tools.eventdetection.AvgEventGenerator;
 import edu.cmu.sv.modelinference.tools.eventdetection.EWMASmoothingFilter;
 import edu.cmu.sv.modelinference.tools.eventdetection.EventDetector;
@@ -39,6 +46,7 @@ import edu.cmu.sv.modelinference.tools.eventdetection.MovingAverageEventDetector
 import edu.cmu.sv.modelinference.tools.eventdetection.RoCExtractor;
 import edu.cmu.sv.modelinference.tools.eventdetection.classification.Clusterer1D;
 import edu.cmu.sv.modelinference.tools.eventdetection.classification.EventClassifier;
+import edu.cmu.sv.modelinference.tools.model.Log2Model;
 
 /**
  * @author Kasper Luckow
@@ -46,6 +54,20 @@ import edu.cmu.sv.modelinference.tools.eventdetection.classification.EventClassi
 public class Log2EventChart implements LogHandler<Void> {
   private static final Logger logger = LoggerFactory.getLogger(Log2EventChart.class.getName());
 
+  private static final String CLUSTERS_ARG = "clusters";
+  private static final String ALARM_ARG = "alarm";
+  private static final String MOVING_AVG_DETECT_SIZE_ARG = "mad";
+  private static final String MOVING_AVG_FEAT_SIZE_ARG = "maf";
+  private static final String HELP_ARG = "help";
+  
+  private static final int DEFAULT_CLUSTERS = 6;
+  private static final int DEFAULT_ALARM_LEVEL = 3;
+  private static final int DEFAULT_DETECT_WINDOWSIZE = 2;
+  private static final int DEFAULT_FEAT_WINDOWSIZE = 3;
+  
+  private Options cmdOpts;
+  private int clusterNum, alarmSize, movingAvgDetection, movingAvgSizeFeat;
+  
   private static Log2EventChart instance = null;
   
   public static Log2EventChart getInstance() {
@@ -61,16 +83,51 @@ public class Log2EventChart implements LogHandler<Void> {
     logHandlers.add(AREventChartHandler.getInstance());
     logHandlers.add(STEventChartHandler.getInstance());
   }
-  
-  private Log2EventChart() { }
+
+  private Log2EventChart() {
+    this.cmdOpts = createCmdOptions();
+  }
 
   @Override
   public String getHandlerName() {
     return "eventchart";
   }
+ 
+  private Options createCmdOptions() {
+    Options options = new Options();
+    
+    Option help = new Option(HELP_ARG, "print this message");    
+    Option clusters = Option.builder(CLUSTERS_ARG).argName("number").hasArg()
+        .desc("Specify number of clusters/event classes. Default is " + DEFAULT_CLUSTERS).build();
+    Option alarm = Option.builder(ALARM_ARG).argName("number").hasArg()
+        .desc("Specify size of upper and lower control limits in terms of number of std dev from expected val. Default is " + DEFAULT_ALARM_LEVEL).build();
+    Option mvRaw = Option.builder(MOVING_AVG_DETECT_SIZE_ARG).argName("number").hasArg()
+        .desc("Specify size of moving average for event detection. Default is " + DEFAULT_DETECT_WINDOWSIZE).build();
+    Option mvFeat = Option.builder(MOVING_AVG_FEAT_SIZE_ARG).argName("number").hasArg()
+        .desc("Specify size of moving average for smoothing feat data. Default is " + DEFAULT_FEAT_WINDOWSIZE).build();
+    options.addOption(clusters);
+    options.addOption(alarm);
+    options.addOption(mvRaw);
+    options.addOption(mvFeat);
+    options.addOption(help);
+    return options;
+  }
   
   @Override
   public Void process(String logFile, String logType, String[] additionalCmdArgs) throws LogProcessingException {
+    CommandLineParser parser = new DefaultParser();
+    CommandLine cmd = null;
+    try {
+      cmd = parser.parse(cmdOpts, additionalCmdArgs, false);
+    } catch(ParseException exp) {
+      logger.error(exp.getMessage());
+      System.err.println(exp.getMessage());
+      Util.printHelpAndExit(Log2EventChart.class, cmdOpts);
+    }
+    
+    if(cmd.hasOption(HELP_ARG))
+      Util.printHelpAndExit(Log2EventChart.class, cmdOpts, 0);
+    
     LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>> logHandler = null;
     boolean found = false;
     for(LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>> lh : logHandlers) {
@@ -89,9 +146,15 @@ public class Log2EventChart implements LogHandler<Void> {
           sb.append(", ");
       }
       logger.error("Did not find loghandler for " + logType);
-      throw new LogProcessingException("Supported log handlers: " + sb.toString());
+      System.err.println("Supported log handlers: " + sb.toString());
+      Util.printHelpAndExit(Log2EventChart.class, cmdOpts);
     }
     logger.info("Using loghandler for logtype: " + logHandler.getHandlerName());
+    
+    this.clusterNum = (cmd.hasOption(CLUSTERS_ARG)) ? Integer.parseInt(cmd.getOptionValue(CLUSTERS_ARG)) : DEFAULT_CLUSTERS;
+    this.alarmSize = (cmd.hasOption(ALARM_ARG)) ? Integer.parseInt(cmd.getOptionValue(ALARM_ARG)) : DEFAULT_ALARM_LEVEL;
+    this.movingAvgDetection = (cmd.hasOption(MOVING_AVG_DETECT_SIZE_ARG)) ? Integer.parseInt(cmd.getOptionValue(MOVING_AVG_DETECT_SIZE_ARG)) : DEFAULT_DETECT_WINDOWSIZE;
+    this.movingAvgSizeFeat = (cmd.hasOption(MOVING_AVG_FEAT_SIZE_ARG)) ? Integer.parseInt(cmd.getOptionValue(MOVING_AVG_FEAT_SIZE_ARG)) : DEFAULT_FEAT_WINDOWSIZE;
     
     ValueTrackerProducer<?, DataPointCollection, ?> valueExtractor = logHandler.process(logFile, logType, additionalCmdArgs);
     
@@ -115,17 +178,17 @@ public class Log2EventChart implements LogHandler<Void> {
     FeatureExtractor slopeExtractor = new RoCExtractor();
     
     //use event detector on features
-    EventDetector movingAvg = new MovingAverageEventDetector(2, 3);
+    EventDetector movingAvg = new MovingAverageEventDetector(this.movingAvgDetection, this.alarmSize);
 
     EventGenerator eventGenerator = new AvgEventGenerator();
     
-    EventClassifier classifier = new Clusterer1D(6, 100, 3000);
+    EventClassifier classifier = new Clusterer1D(this.clusterNum, 100, 3000);
     
     EventVisualizer.Builder bldr = new EventVisualizer.Builder(movingAvg,
               slopeExtractor, eventGenerator, classifier);
     
-    EWMASmoothingFilter ewmaFilter = new EWMASmoothingFilter(3, 0.1);
-    EWMASmoothingFilter ewmaFilterFeature = new EWMASmoothingFilter(3, 0.1);
+    EWMASmoothingFilter ewmaFilter = new EWMASmoothingFilter(this.movingAvgSizeFeat, 0.1);
+    EWMASmoothingFilter ewmaFilterFeature = new EWMASmoothingFilter(this.movingAvgSizeFeat, 0.1);
     EventVisualizer eventVisualizer = bldr.addRawDataSmoothingFilter(ewmaFilter)
         .addFeatureSmoothingFilter(ewmaFilterFeature)
         .build();

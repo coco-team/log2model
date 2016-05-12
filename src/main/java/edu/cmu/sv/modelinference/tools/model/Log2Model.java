@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.cmu.sv.modelinference;
+package edu.cmu.sv.modelinference.tools.model;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Stopwatch;
 
+import edu.cmu.sv.modelinference.Main;
 import edu.cmu.sv.modelinference.generators.model.Model;
 import edu.cmu.sv.modelinference.mc.ModelAdapter;
 import edu.cmu.sv.modelinference.mc.ModelCheckerAdapter;
@@ -127,6 +128,9 @@ public class Log2Model implements LogHandler<Void> {
       System.err.println(exp.getMessage());
       Util.printHelpAndExit(Log2Model.class, cmdOpts);
     }
+    
+    if(cmd.hasOption(HELP_ARG))
+      Util.printHelpAndExit(Log2Model.class, cmdOpts, 0);
     
     boolean runModelChecker = cmd.hasOption(RUN_MODEL_CHECKER_ARG);
     if(runModelChecker && !cmd.hasOption(PROPERTIES_ARG)) {
