@@ -22,26 +22,24 @@ The main entry point of `Log2model` can then be invoked:
 $ ./build/install/log2model/bin/log2model
 ```
 
-## Usage
-`Log2Model` is 
-
 ## Examples
 The following shows example usages based on a SafeTugs log.
 
-To generate a `PRISM` model, execute:
+The main tool of `Log2Model` is generating probabilistic models from the behaviors extracted from log files. To generate a `PRISM` model, execute:
 ```bash
 $ ./build/install/log2model/bin/log2model -input examples/st_example.log -type st -tool model -m prism -o ./ -v -dim 2x2
 ```
 This will generate the `PRISM` file `model.prism`. You can optionally leave out the `-v` switch to not produce a visualization of the DTMC. The prettyprint will be output in the same destionation as the argument of the `-o` switch. The `dim` option (SafeTugs specific) specifies the dimensions of the grid projected on top of the airfield.
 
+In addition, `Log2Model` has a number of additional tools:
 To perform state mining and visualize the results:
 ```bash
-$ ./build/install/log2model/bin/log2model -input examples/st_example.log -type st -tool eventclass -field speed -flightname XXXXXXX
+$ ./build/install/log2model/bin/log2model -input examples/st_example.log -type st -tool eventclass -field speed -flightname FLIGHT1
 ```
 
 The event classes can be viewed in the log file `logs/app.log`. The can also be output to stdout---just change the `log4j2.xml` configuration file in `src/main/resources/`. There are many optional arguments that can be passed to the `eventchart` tool, e.g., number of event classes, tuning control limits etc. A full example:
 ```bash
-$ ./build/install/log2model/bin/log2model -input examples/st_example.log -type st -tool eventclass -classes 6 -alarm 3 -mad 2 -maf 3 -field speed -flightname XXXXXXX
+$ ./build/install/log2model/bin/log2model -input examples/st_example.log -type st -tool eventclass -classes 6 -alarm 3 -mad 2 -maf 3 -field speed -flightname FLIGHT1
 ```
 Here `-classes` is the number of event classes the will be found using k-means. `-alarm` is the number of standard deviations from the expected value in order to raise a new event---essentially it controls the sensitivity with which events are found. `-mad` is the number of previous data points used for calculating a moving average for smoothing the raw data. `-maf` is similarly for smoothing, but applies to the extracted feature used for event detection.
 
