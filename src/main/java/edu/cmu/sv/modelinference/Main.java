@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.cmu.sv.modelinference.tools.LogHandler;
-import edu.cmu.sv.modelinference.tools.charting.Log2EventChart;
+import edu.cmu.sv.modelinference.tools.charting.Log2EventClass;
 import edu.cmu.sv.modelinference.tools.charting.LogProcessingException;
 import edu.cmu.sv.modelinference.tools.cmdutil.Util;
 import edu.cmu.sv.modelinference.tools.model.Log2Model;
@@ -51,7 +51,7 @@ public class Main {
   
   //Put all log handlers here.
   static {
-    logHandlers.add(Log2EventChart.getInstance());
+    logHandlers.add(Log2EventClass.getInstance());
     logHandlers.add(Log2Traces.getInstance());
     logHandlers.add(Log2Model.getInstance());
   }

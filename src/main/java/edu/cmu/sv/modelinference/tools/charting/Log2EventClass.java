@@ -51,8 +51,8 @@ import edu.cmu.sv.modelinference.tools.model.Log2Model;
 /**
  * @author Kasper Luckow
  */
-public class Log2EventChart implements LogHandler<Void> {
-  private static final Logger logger = LoggerFactory.getLogger(Log2EventChart.class.getName());
+public class Log2EventClass implements LogHandler<Void> {
+  private static final Logger logger = LoggerFactory.getLogger(Log2EventClass.class.getName());
 
   private static final String CLUSTERS_ARG = "clusters";
   private static final String ALARM_ARG = "alarm";
@@ -68,11 +68,11 @@ public class Log2EventChart implements LogHandler<Void> {
   private Options cmdOpts;
   private int clusterNum, alarmSize, movingAvgDetection, movingAvgSizeFeat;
   
-  private static Log2EventChart instance = null;
+  private static Log2EventClass instance = null;
   
-  public static Log2EventChart getInstance() {
+  public static Log2EventClass getInstance() {
     if(instance == null) {
-      instance = new Log2EventChart();
+      instance = new Log2EventClass();
     }
     return instance;
   }
@@ -84,13 +84,13 @@ public class Log2EventChart implements LogHandler<Void> {
     logHandlers.add(STEventChartHandler.getInstance());
   }
 
-  private Log2EventChart() {
+  private Log2EventClass() {
     this.cmdOpts = createCmdOptions();
   }
 
   @Override
   public String getHandlerName() {
-    return "eventchart";
+    return "eventclass";
   }
  
   private Options createCmdOptions() {
@@ -122,11 +122,11 @@ public class Log2EventChart implements LogHandler<Void> {
     } catch(ParseException exp) {
       logger.error(exp.getMessage());
       System.err.println(exp.getMessage());
-      Util.printHelpAndExit(Log2EventChart.class, cmdOpts);
+      Util.printHelpAndExit(Log2EventClass.class, cmdOpts);
     }
     
     if(cmd.hasOption(HELP_ARG))
-      Util.printHelpAndExit(Log2EventChart.class, cmdOpts, 0);
+      Util.printHelpAndExit(Log2EventClass.class, cmdOpts, 0);
     
     LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>> logHandler = null;
     boolean found = false;
@@ -147,7 +147,7 @@ public class Log2EventChart implements LogHandler<Void> {
       }
       logger.error("Did not find loghandler for " + logType);
       System.err.println("Supported log handlers: " + sb.toString());
-      Util.printHelpAndExit(Log2EventChart.class, cmdOpts);
+      Util.printHelpAndExit(Log2EventClass.class, cmdOpts);
     }
     logger.info("Using loghandler for logtype: " + logHandler.getHandlerName());
     

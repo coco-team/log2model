@@ -41,7 +41,7 @@ import com.google.common.collect.Range;
 import edu.cmu.sv.modelinference.tools.charting.ClassificationXYRenderer;
 import edu.cmu.sv.modelinference.tools.charting.DataChart;
 import edu.cmu.sv.modelinference.tools.charting.DataPointCollection;
-import edu.cmu.sv.modelinference.tools.charting.Log2EventChart;
+import edu.cmu.sv.modelinference.tools.charting.Log2EventClass;
 import edu.cmu.sv.modelinference.tools.eventdetection.classification.ClassificationResult;
 import edu.cmu.sv.modelinference.tools.eventdetection.classification.Event;
 import edu.cmu.sv.modelinference.tools.eventdetection.classification.EventClass;
@@ -54,7 +54,7 @@ import edu.cmu.sv.modelinference.tools.eventdetection.classification.EventUtils;
  */
 public class EventVisualizer {
   
-  private static final Logger logger = LoggerFactory.getLogger(Log2EventChart.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(Log2EventClass.class.getName());
 
   private final EventDetector evtDetector;
   private final SmoothingFilter smoothingFilter;
