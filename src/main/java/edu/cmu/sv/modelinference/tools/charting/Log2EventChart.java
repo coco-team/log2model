@@ -118,7 +118,7 @@ public class Log2EventChart implements LogHandler<Void> {
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = null;
     try {
-      cmd = parser.parse(cmdOpts, additionalCmdArgs, false);
+      cmd = parser.parse(cmdOpts, additionalCmdArgs, true);
     } catch(ParseException exp) {
       logger.error(exp.getMessage());
       System.err.println(exp.getMessage());
@@ -156,7 +156,7 @@ public class Log2EventChart implements LogHandler<Void> {
     this.movingAvgDetection = (cmd.hasOption(MOVING_AVG_DETECT_SIZE_ARG)) ? Integer.parseInt(cmd.getOptionValue(MOVING_AVG_DETECT_SIZE_ARG)) : DEFAULT_DETECT_WINDOWSIZE;
     this.movingAvgSizeFeat = (cmd.hasOption(MOVING_AVG_FEAT_SIZE_ARG)) ? Integer.parseInt(cmd.getOptionValue(MOVING_AVG_FEAT_SIZE_ARG)) : DEFAULT_FEAT_WINDOWSIZE;
     
-    ValueTrackerProducer<?, DataPointCollection, ?> valueExtractor = logHandler.process(logFile, logType, additionalCmdArgs);
+    ValueTrackerProducer<?, DataPointCollection, ?> valueExtractor = logHandler.process(logFile, logType, cmd.getArgs());
     
     Map<String, DataPointCollection> rawData;
     try {

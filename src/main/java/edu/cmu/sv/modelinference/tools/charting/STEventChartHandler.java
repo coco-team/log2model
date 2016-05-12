@@ -34,6 +34,7 @@ import edu.cmu.sv.modelinference.generators.formats.st.STValueTracker.FIELD;
 import edu.cmu.sv.modelinference.generators.parser.LogReader;
 import edu.cmu.sv.modelinference.generators.parser.SequentialLogReader;
 import edu.cmu.sv.modelinference.tools.LogHandler;
+import edu.cmu.sv.modelinference.tools.cmdutil.Util;
 
 /**
  * @author Kasper Luckow
@@ -42,8 +43,8 @@ import edu.cmu.sv.modelinference.tools.LogHandler;
 public class STEventChartHandler implements LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>> {
   
   private static final Logger logger = LoggerFactory.getLogger(STEventChartHandler.class);
-  private static final String ADD_OPTS_ARG = "a";
-  private static final String FLIGHTNAME_OPTS_ARG = "f";
+  private static final String ADD_OPTS_ARG = "field";
+  private static final String FLIGHTNAME_OPTS_ARG = "flightname";
   
   private boolean hasFlightName = false;
   private FIELD trackedField = null;
@@ -68,7 +69,7 @@ public class STEventChartHandler implements LogHandler<ValueTrackerProducer<?, D
     Options options = new Options();
     
     Option addOpts = Option.builder(ADD_OPTS_ARG).argName("Additional options").hasArg()
-          .desc("Additional input type options").build();
+          .desc("Additional input type options").required(true).build();
     
     Option flightNameOpt = Option.builder(FLIGHTNAME_OPTS_ARG).argName("Flight name").hasArg()
           .desc("Filter out everything but this flight name").required(false).build();
@@ -86,19 +87,21 @@ public class STEventChartHandler implements LogHandler<ValueTrackerProducer<?, D
   @Override
   public ValueTrackerProducer<?, DataPointCollection, ?> process(String logFile, String logType, String[] additionalCmdArgs) {
     CommandLineParser parser = new DefaultParser();
-    CommandLine cmd;
+    CommandLine cmd = null;
     try {
       cmd = parser.parse(cmdOpts, additionalCmdArgs, false);
-    } catch (ParseException e) {
-      throw new LogProcessingException(e);
+    } catch(ParseException exp) {
+      logger.error(exp.getMessage());
+      System.err.println(exp.getMessage());
+      Util.printHelpAndExit(STEventChartHandler.class, cmdOpts);
     }
 
     try {
       trackedField = FIELD.valueOf(cmd.getOptionValue(ADD_OPTS_ARG).toUpperCase());
-    } catch(Exception e) {
-      String msg = "Must be supplied a field to be tracked (e.g., pos_x) to additional arg option";
-      logger.error(msg);
-      throw new LogProcessingException(msg);
+    } catch(Exception exp) {
+      logger.error(exp.getMessage());
+      System.err.println(exp.getMessage());
+      Util.printHelpAndExit(STEventChartHandler.class, cmdOpts);
     }
     
     if(cmd.hasOption(FLIGHTNAME_OPTS_ARG)) {
