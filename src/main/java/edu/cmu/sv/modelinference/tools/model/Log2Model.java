@@ -209,6 +209,7 @@ public class Log2Model implements LogHandler<Void> {
       try {
         model.writeModelToFile(outputPath);
       } catch (IOException e) {
+        logger.error(e.getMessage());
         throw new LogProcessingException(e);
       }
     }
