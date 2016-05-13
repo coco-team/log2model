@@ -32,6 +32,6 @@ public class UppaalModel extends ModelAdapter<NTA> {
   @Override
   public void writeModelToFile(String basepath) {
     File outputPath = new File(basepath, super.model.getSystemName() + ".xml");
-    super.model.writePrettyLayoutModelToFile(outputPath.getAbsolutePath());
+    super.model.writeModelToFile(outputPath.getAbsolutePath());
   }
 }

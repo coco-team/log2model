@@ -71,12 +71,14 @@ public class UppaalModelChecker extends ModelCheckerAdapter<NTA, String> {
 	private Update initUpdate;
 	private Automaton automaton;
 	private Map<State, Location> translatedChoices = new HashMap<>();
-	private String targetMethod = "BLALALALALALA";
+	private String targetMethod = "target";
+  private boolean isFirstLocSet = false;
 	
 	@Override
 	public void initModelGenerator(Model<?> model) {
 		this.nta = new NTA();
 		this.automaton = new Automaton(targetMethod);
+		this.nta.setSystemName(targetMethod + "_model");
 		
     final int defaultInitVal = 0;
     int initVal;
@@ -107,7 +109,7 @@ public class UppaalModelChecker extends ModelCheckerAdapter<NTA, String> {
 		//this.initUpdate = new Update(updateStr);
 		this.initLoc = new Location(this.automaton, "initloc");
 		this.translatedChoices.put(model.getInitState(), this.initLoc);
-		//this.initLoc.setType(LocationType.URGENT);
+		this.initLoc.setType(LocationType.URGENT);
 		this.automaton.setInit(this.initLoc);
 		this.nta.addAutomaton(this.automaton);
 		this.nta.getSystemDeclaration().addSystemInstance(automaton.getName().getName());
@@ -140,19 +142,23 @@ public class UppaalModelChecker extends ModelCheckerAdapter<NTA, String> {
 	public void finishModelGenerator() {
 		// Anything to do here?
 	}
-  
+
   @Override
   public <S extends State> void visit(S state) {
-    Location translatedLoc = translateState(state);
-    translatedLoc.setType(LocationType.URGENT);
     Location branchLoc = new Location(this.automaton);
     branchLoc.setBranchPointLocation(true);
-    new Transition(this.automaton, translatedLoc, branchLoc);
     this.translatedChoices.put(state, branchLoc);
+    Location translatedLoc = translateState(state);
+    translatedLoc.setType(LocationType.URGENT);
+    new Transition(this.automaton, translatedLoc, branchLoc);
+    if(!isFirstLocSet) {
+      new Transition(this.automaton, this.initLoc, translatedLoc);
+      isFirstLocSet = true;
+    }
   }
   
   private Location translateState(State currentState) {
-    Location newLoc = new Location(this.automaton, currentState.toString());
+    Location newLoc = new Location(this.automaton, currentState.toString().replaceAll("[\\s,=]*", ""));
     for(edu.cmu.sv.modelinference.generators.model.Transition in : currentState.getIncomingTransitions()) {
       State prevState = in.getSource();
       Location prevLoc = this.translatedChoices.get(prevState);
@@ -178,8 +184,7 @@ public class UppaalModelChecker extends ModelCheckerAdapter<NTA, String> {
   
   @Override
   protected ModelAdapter<NTA> getGeneratedModel() {
-    // TODO Auto-generated method stub
-    return null;
+    return new UppaalModel(this.nta);
   }
   
   @Override
