@@ -122,7 +122,7 @@ public class PrismModelChecker extends ModelCheckerAdapter<ModulesFile, String> 
   }
 
   @Override
-  public void finishModelGenerator() {
+  public void finishModelGenerator(Model<?> irmodel) {
     //Nothing to do
   }
 

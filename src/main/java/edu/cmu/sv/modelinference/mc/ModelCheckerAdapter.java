@@ -32,7 +32,7 @@ public abstract class ModelCheckerAdapter<T, S> implements ModelVisitor {
 	    s.setVisited(false);
 	  initModelGenerator(irModel);
 	  irModel.accept(this);
-	  finishModelGenerator();
+	  finishModelGenerator(irModel);
 	  return getGeneratedModel();
 	}
 	
@@ -44,6 +44,6 @@ public abstract class ModelCheckerAdapter<T, S> implements ModelVisitor {
   public abstract ModelCheckerResult executeModelChecker(ModelAdapter<T> model, Collection<PropertyAdapter<S>> properties) throws ModelCheckerException;
 
 	protected abstract void initModelGenerator(Model<?> model);
-	protected abstract void finishModelGenerator();
+	protected abstract void finishModelGenerator(Model<?> model);
 	protected abstract ModelAdapter<T> getGeneratedModel();
 }

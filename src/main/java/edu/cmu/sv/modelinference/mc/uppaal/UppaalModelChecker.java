@@ -70,7 +70,8 @@ public class UppaalModelChecker extends ModelCheckerAdapter<NTA, String> {
 	private Location initLoc;
 	private Update initUpdate;
 	private Automaton automaton;
-	private Map<State, Location> translatedChoices = new HashMap<>();
+	private Map<State, Location> translatedSources = new HashMap<>();
+	 private Map<State, Location> translatedDestinations = new HashMap<>(); //fix this mess
 	private String targetMethod = "target";
   private boolean isFirstLocSet = false;
 	
@@ -108,7 +109,7 @@ public class UppaalModelChecker extends ModelCheckerAdapter<NTA, String> {
 		
 		//this.initUpdate = new Update(updateStr);
 		this.initLoc = new Location(this.automaton, "initloc");
-		this.translatedChoices.put(model.getInitState(), this.initLoc);
+		this.translatedSources.put(model.getInitState(), this.initLoc);
 		this.initLoc.setType(LocationType.URGENT);
 		this.automaton.setInit(this.initLoc);
 		this.nta.addAutomaton(this.automaton);
@@ -139,37 +140,36 @@ public class UppaalModelChecker extends ModelCheckerAdapter<NTA, String> {
 	}
 	
 	@Override
-	public void finishModelGenerator() {
-		// Anything to do here?
+	public void finishModelGenerator(Model<?> irModel) {
+	  for(State s : irModel.getStates()) {
+	    Location srcLoc = this.translatedSources.get(s);
+	    for(edu.cmu.sv.modelinference.generators.model.Transition t : s.getOutgoingTransitions()) {
+	      if(!(t instanceof WeightedTransition)) {
+	        throw new UppaalModelGeneratorException("Expected weighted transition");
+	      }
+        WeightedTransition wt = (WeightedTransition)t;
+	      State nextState = t.getDest();
+	      Location destLoc = this.translatedDestinations.get(nextState);
+
+	      Transition trans = new Transition(this.automaton, srcLoc, destLoc);
+	      trans.setProb(new Probability(wt.getWeight()));
+	    }
+	  }
 	}
 
   @Override
   public <S extends State> void visit(S state) {
     Location branchLoc = new Location(this.automaton);
     branchLoc.setBranchPointLocation(true);
-    this.translatedChoices.put(state, branchLoc);
-    Location translatedLoc = translateState(state);
+    this.translatedSources.put(state, branchLoc);
+    Location translatedLoc = new Location(this.automaton, state.toString().replaceAll("[\\s,=]*", ""));
     translatedLoc.setType(LocationType.URGENT);
     new Transition(this.automaton, translatedLoc, branchLoc);
     if(!isFirstLocSet) {
       new Transition(this.automaton, this.initLoc, translatedLoc);
       isFirstLocSet = true;
     }
-  }
-  
-  private Location translateState(State currentState) {
-    Location newLoc = new Location(this.automaton, currentState.toString().replaceAll("[\\s,=]*", ""));
-    for(edu.cmu.sv.modelinference.generators.model.Transition in : currentState.getIncomingTransitions()) {
-      State prevState = in.getSource();
-      Location prevLoc = this.translatedChoices.get(prevState);
-      if(!(in instanceof WeightedTransition)) {
-        throw new UppaalModelGeneratorException("Expected weighted transition");
-      }
-      WeightedTransition wt = (WeightedTransition)in;
-      Transition trans = new Transition(this.automaton, prevLoc, newLoc);
-      trans.setProb(new Probability(wt.getWeight()));
-    }
-    return newLoc;
+    this.translatedDestinations.put(state, translatedLoc);
   }
   
   @Override
