@@ -1,0 +1,2 @@
+rootProject.name = 'log2model'
+include ":api",":core",":eventtool",":tracestool",":modeltool"
