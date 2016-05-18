@@ -34,14 +34,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.cmu.sv.modelinference.common.model.Assignment;
+import edu.cmu.sv.modelinference.common.model.Model;
+import edu.cmu.sv.modelinference.common.model.State;
+import edu.cmu.sv.modelinference.common.model.WeightedTransition;
 import edu.cmu.sv.modelinference.modeltool.mc.ModelAdapter;
 import edu.cmu.sv.modelinference.modeltool.mc.ModelCheckerAdapter;
 import edu.cmu.sv.modelinference.modeltool.mc.ModelCheckerResult;
 import edu.cmu.sv.modelinference.modeltool.mc.PropertyAdapter;
-import edu.cmu.sv.modelinference.modeltool.model.Assignment;
-import edu.cmu.sv.modelinference.modeltool.model.Model;
-import edu.cmu.sv.modelinference.modeltool.model.State;
-import edu.cmu.sv.modelinference.modeltool.model.WeightedTransition;
 import uppaal.Automaton;
 import uppaal.Location;
 import uppaal.Location.LocationType;
@@ -143,7 +143,7 @@ public class UppaalModelChecker extends ModelCheckerAdapter<NTA, String> {
 	public void finishModelGenerator(Model<?> irModel) {
 	  for(State s : irModel.getStates()) {
 	    Location srcLoc = this.translatedSources.get(s);
-	    for(edu.cmu.sv.modelinference.modeltool.model.Transition t : s.getOutgoingTransitions()) {
+	    for(edu.cmu.sv.modelinference.common.model.Transition t : s.getOutgoingTransitions()) {
 	      if(!(t instanceof WeightedTransition)) {
 	        throw new UppaalModelGeneratorException("Expected weighted transition");
 	      }
@@ -173,7 +173,7 @@ public class UppaalModelChecker extends ModelCheckerAdapter<NTA, String> {
   }
   
   @Override
-  public void visit(edu.cmu.sv.modelinference.modeltool.model.Transition transition) {
+  public void visit(edu.cmu.sv.modelinference.common.model.Transition transition) {
     // TODO Auto-generated method stub
     
   }

@@ -15,20 +15,14 @@
  */
 package edu.cmu.sv.modelinference.common.formats.st;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-import edu.cmu.sv.modelinference.generators.model.State;
-import edu.cmu.sv.modelinference.generators.model.Assignment;
+import edu.cmu.sv.modelinference.common.model.State;
 
 /**
  * @author Kasper Luckow
  */
 public class ArrDepGridState extends State {
-  
-
-
+	
   @Override
   public int hashCode() {
     return super.hashCode();

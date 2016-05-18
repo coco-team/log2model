@@ -17,9 +17,9 @@ package edu.cmu.sv.modelinference.common.formats.st;
 
 import java.util.Iterator;
 
-import edu.cmu.sv.modelinference.generators.formats.st.GridFactory.Grid.Cell;
-import edu.cmu.sv.modelinference.generators.model.Assignment;
-import edu.cmu.sv.modelinference.generators.model.State;
+import edu.cmu.sv.modelinference.common.formats.st.GridFactory.Grid.Cell;
+import edu.cmu.sv.modelinference.common.model.Assignment;
+import edu.cmu.sv.modelinference.common.model.State;
 
 /**
  * @author Kasper Luckow

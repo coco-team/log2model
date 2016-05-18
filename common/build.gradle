@@ -1,6 +1,0 @@
-dependencies {
-     compile project(":api")
-     compile group: 'commons-cli', name: 'commons-cli', version:'1.3'
-}
-
-

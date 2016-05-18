@@ -18,13 +18,14 @@ package edu.cmu.sv.modelinference.common.formats.st;
 import java.io.File;
 import java.io.IOException;
 
-import edu.cmu.sv.modelinference.generators.IRModelGenerator;
-import edu.cmu.sv.modelinference.generators.LogEntryFilter;
-import edu.cmu.sv.modelinference.generators.ModelInferer;
-import edu.cmu.sv.modelinference.generators.formats.st.util.GridDimensionsFinder;
-import edu.cmu.sv.modelinference.generators.formats.st.util.GridDimensionsFinder.Dimensions;
-import edu.cmu.sv.modelinference.generators.model.Model;
-import edu.cmu.sv.modelinference.generators.parser.SequentialLogReader;
+import edu.cmu.sv.modelinference.common.formats.st.util.GridDimensionsFinder;
+import edu.cmu.sv.modelinference.common.formats.st.util.GridDimensionsFinder.Dimensions;
+import edu.cmu.sv.modelinference.common.generators.LogEntryFilter;
+import edu.cmu.sv.modelinference.common.model.IRModelGenerator;
+import edu.cmu.sv.modelinference.common.model.Model;
+import edu.cmu.sv.modelinference.common.model.ModelInferer;
+import edu.cmu.sv.modelinference.common.parser.SequentialLogReader;
+
 /**
  * @author Kasper Luckow
  */

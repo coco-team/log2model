@@ -15,8 +15,8 @@
  */
 package edu.cmu.sv.modelinference.common.formats.autoresolver;
 
-import edu.cmu.sv.modelinference.generators.LogParser;
-import edu.cmu.sv.modelinference.generators.ParserException;
+import edu.cmu.sv.modelinference.common.generators.LogParser;
+import edu.cmu.sv.modelinference.common.generators.ParserException;
 
 /**
  * @author Kasper Luckow

@@ -18,8 +18,8 @@ package edu.cmu.sv.modelinference.modeltool.handlers;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import edu.cmu.sv.modelinference.api.LogHandler;
-import edu.cmu.sv.modelinference.api.LogProcessingException;
+import edu.cmu.sv.modelinference.common.api.LogHandler;
+import edu.cmu.sv.modelinference.common.api.LogProcessingException;
 import edu.cmu.sv.modelinference.modeltool.mc.ModelCheckerAdapter;
 import edu.cmu.sv.modelinference.modeltool.mc.prism.PrismModelChecker;
 

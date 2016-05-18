@@ -18,14 +18,11 @@ package edu.cmu.sv.modelinference.common.formats.autoresolver;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jfree.data.xy.XYSeries;
-
-import edu.cmu.sv.modelinference.generators.DataSetFactory;
-import edu.cmu.sv.modelinference.generators.ValueTrackerProducer;
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
-import edu.cmu.sv.modelinference.generators.parser.LogReader;
-import edu.cmu.sv.modelinference.tools.charting.DataPoint;
-import edu.cmu.sv.modelinference.tools.charting.DataPointCollection;
+import edu.cmu.sv.modelinference.common.formats.DataPoint;
+import edu.cmu.sv.modelinference.common.formats.DataPointCollection;
+import edu.cmu.sv.modelinference.common.formats.DataSetFactory;
+import edu.cmu.sv.modelinference.common.formats.ValueTrackerProducer;
+import edu.cmu.sv.modelinference.common.parser.LogReader;
 
 /**
  * 
@@ -36,25 +33,6 @@ import edu.cmu.sv.modelinference.tools.charting.DataPointCollection;
  */
 public abstract class ARValueTracker<S> extends ValueTrackerProducer<AutoresolverEntry, S, Double> {
   
-  public static class ARValueSeriesGenerator extends ARValueTracker<XYSeries> {
-    private static final DataSetFactory<XYSeries> FACTORY = new DataSetFactory<XYSeries>() {
-      @Override
-      public XYSeries create(String producer) {
-        return new XYSeries(producer);
-      }
-    };
-    
-    public ARValueSeriesGenerator(edu.cmu.sv.modelinference.generators.formats.autoresolver.ARValueTracker.FIELD field,
-        LogReader<AutoresolverEntry> logReader) {
-      super(field, logReader, FACTORY);
-    }
-
-    @Override
-    public void addToDataSet(XYSeries dataset, double time, Double data) {
-      dataset.add(time, data);
-    }
-  }
-  
   public static class ARDataPointsGenerator extends ARValueTracker<DataPointCollection> {
     private static final DataSetFactory<DataPointCollection> FACTORY = new DataSetFactory<DataPointCollection>() {
       @Override
@@ -63,7 +41,7 @@ public abstract class ARValueTracker<S> extends ValueTrackerProducer<Autoresolve
       }
     };
     
-    public ARDataPointsGenerator(edu.cmu.sv.modelinference.generators.formats.autoresolver.ARValueTracker.FIELD field,
+    public ARDataPointsGenerator(ARValueTracker.FIELD field,
         LogReader<AutoresolverEntry> logReader) {
       super(field, logReader, FACTORY);
     }

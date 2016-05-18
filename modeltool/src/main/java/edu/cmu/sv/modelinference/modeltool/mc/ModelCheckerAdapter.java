@@ -17,9 +17,9 @@ package edu.cmu.sv.modelinference.modeltool.mc;
 
 import java.util.Collection;
 
-import edu.cmu.sv.modelinference.modeltool.model.Model;
-import edu.cmu.sv.modelinference.modeltool.model.ModelVisitor;
-import edu.cmu.sv.modelinference.modeltool.model.State;
+import edu.cmu.sv.modelinference.common.model.Model;
+import edu.cmu.sv.modelinference.common.model.ModelVisitor;
+import edu.cmu.sv.modelinference.common.model.State;
 
 /**
  * @author Kasper Luckow

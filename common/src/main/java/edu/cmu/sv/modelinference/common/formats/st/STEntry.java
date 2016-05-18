@@ -15,7 +15,7 @@
  */
 package edu.cmu.sv.modelinference.common.formats.st;
 
-import edu.cmu.sv.modelinference.generators.LogEntry;
+import edu.cmu.sv.modelinference.common.generators.LogEntry;
 
 /**
  * @author Kasper Luckow
