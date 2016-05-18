@@ -22,7 +22,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-import edu.cmu.sv.modelinference.generators.formats.st.GridFactory.Grid;
+import edu.cmu.sv.modelinference.common.formats.st.GridFactory.Grid;
 
 /**
  * @author Kasper Luckow

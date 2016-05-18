@@ -15,8 +15,8 @@
  */
 package edu.cmu.sv.modelinference.common.formats.st;
 
-import edu.cmu.sv.modelinference.generators.StateFactory;
-import edu.cmu.sv.modelinference.generators.model.State;
+import edu.cmu.sv.modelinference.common.model.State;
+import edu.cmu.sv.modelinference.common.model.StateFactory;
 
 /**
  * @author Kasper Luckow

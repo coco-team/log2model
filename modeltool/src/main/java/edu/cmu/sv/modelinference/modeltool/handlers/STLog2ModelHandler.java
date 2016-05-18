@@ -26,8 +26,15 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.cmu.sv.modelinference.api.LogHandler;
-import edu.cmu.sv.modelinference.modeltool.model.Model;
+import edu.cmu.sv.modelinference.common.Util;
+import edu.cmu.sv.modelinference.common.api.LogHandler;
+import edu.cmu.sv.modelinference.common.api.LogProcessingException;
+import edu.cmu.sv.modelinference.common.formats.st.GridState;
+import edu.cmu.sv.modelinference.common.formats.st.STConfig;
+import edu.cmu.sv.modelinference.common.formats.st.STConfig.GridPartitions;
+import edu.cmu.sv.modelinference.common.formats.st.STModelInferer;
+import edu.cmu.sv.modelinference.common.model.Model;
+import edu.cmu.sv.modelinference.common.model.ModelInferer;
 
 /**
  * @author Kasper Luckow
@@ -86,7 +93,7 @@ public class STLog2ModelHandler implements LogHandler<Model<?>> {
       String partStr = cmd.getOptionValue(GRID_DIM).trim();
       GridPartitions parts;
       try {
-        parts = Util.extractGridPartitions(partStr);
+        parts = STConfig.extractGridPartitions(partStr);
       } catch (ParseException e) {
         throw new LogProcessingException(e);
       }

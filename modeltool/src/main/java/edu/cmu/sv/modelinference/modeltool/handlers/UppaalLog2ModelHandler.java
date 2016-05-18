@@ -15,10 +15,10 @@
  */
 package edu.cmu.sv.modelinference.modeltool.handlers;
 
-import edu.cmu.sv.modelinference.mc.ModelCheckerAdapter;
-import edu.cmu.sv.modelinference.mc.uppaal.UppaalModelChecker;
-import edu.cmu.sv.modelinference.tools.LogHandler;
-import edu.cmu.sv.modelinference.tools.charting.LogProcessingException;
+import edu.cmu.sv.modelinference.common.api.LogHandler;
+import edu.cmu.sv.modelinference.common.api.LogProcessingException;
+import edu.cmu.sv.modelinference.modeltool.mc.ModelCheckerAdapter;
+import edu.cmu.sv.modelinference.modeltool.mc.uppaal.UppaalModelChecker;
 
 /**
  * @author Kasper Luckow

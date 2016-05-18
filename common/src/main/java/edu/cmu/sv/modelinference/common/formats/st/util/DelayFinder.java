@@ -22,12 +22,12 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.cmu.sv.modelinference.generators.LogEntryFilter;
-import edu.cmu.sv.modelinference.generators.LogProcessor;
-import edu.cmu.sv.modelinference.generators.formats.st.STEntry;
-import edu.cmu.sv.modelinference.generators.formats.st.STParser;
-import edu.cmu.sv.modelinference.generators.parser.LogReader;
-import edu.cmu.sv.modelinference.generators.parser.SequentialLogReader;
+import edu.cmu.sv.modelinference.common.formats.st.STEntry;
+import edu.cmu.sv.modelinference.common.formats.st.STParser;
+import edu.cmu.sv.modelinference.common.generators.LogEntryFilter;
+import edu.cmu.sv.modelinference.common.generators.LogProcessor;
+import edu.cmu.sv.modelinference.common.parser.LogReader;
+import edu.cmu.sv.modelinference.common.parser.SequentialLogReader;
 
 /**
  * @author Kasper Luckow

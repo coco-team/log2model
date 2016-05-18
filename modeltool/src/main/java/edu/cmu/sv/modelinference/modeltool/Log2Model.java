@@ -32,15 +32,17 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Stopwatch;
 
-import edu.cmu.sv.modelinference.api.LogHandler;
-import edu.cmu.sv.modelinference.api.LogProcessingException;
+import edu.cmu.sv.modelinference.common.Util;
+import edu.cmu.sv.modelinference.common.api.LogHandler;
+import edu.cmu.sv.modelinference.common.api.LogProcessingException;
+import edu.cmu.sv.modelinference.common.model.Model;
+import edu.cmu.sv.modelinference.common.model.pp.Format;
+import edu.cmu.sv.modelinference.common.model.pp.PrettyPrinter;
 import edu.cmu.sv.modelinference.modeltool.handlers.PrismLog2ModelHandler;
 import edu.cmu.sv.modelinference.modeltool.handlers.STLog2ModelHandler;
 import edu.cmu.sv.modelinference.modeltool.handlers.UppaalLog2ModelHandler;
+import edu.cmu.sv.modelinference.modeltool.mc.ModelAdapter;
 import edu.cmu.sv.modelinference.modeltool.mc.ModelCheckerAdapter;
-import edu.cmu.sv.modelinference.modeltool.model.Model;
-import edu.cmu.sv.modelinference.modeltool.pp.Format;
-import edu.cmu.sv.modelinference.modeltool.pp.PrettyPrinter;
 
 /**
  * @author Kasper Luckow
