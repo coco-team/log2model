@@ -44,7 +44,7 @@ import edu.cmu.sv.modelinference.common.parser.SequentialLogReader;
 public class STEventChartHandler implements LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>> {
   
   private static final Logger logger = LoggerFactory.getLogger(STEventChartHandler.class);
-  private static final String ADD_OPTS_ARG = "field";
+  private static final String FIELD_OPTS_ARG = "field";
   private static final String FLIGHTNAME_OPTS_ARG = "flightname";
   
   private boolean hasFlightName = false;
@@ -69,8 +69,9 @@ public class STEventChartHandler implements LogHandler<ValueTrackerProducer<?, D
   private Options createCmdOptions() {
     Options options = new Options();
     
-    Option addOpts = Option.builder(ADD_OPTS_ARG).argName("Additional options").hasArg()
-          .desc("Additional input type options").required(true).build();
+    Option addOpts = Option.builder(FIELD_OPTS_ARG).argName("Field").hasArg()
+    		//Could make a list here based on values of STValueTracker.FIELD
+          .desc("Field to be tracked, e.g., speed").required(true).build();
     
     Option flightNameOpt = Option.builder(FLIGHTNAME_OPTS_ARG).argName("Flight name").hasArg()
           .desc("Filter out everything but this flight name").required(false).build();
@@ -98,7 +99,7 @@ public class STEventChartHandler implements LogHandler<ValueTrackerProducer<?, D
     }
 
     try {
-      trackedField = FIELD.valueOf(cmd.getOptionValue(ADD_OPTS_ARG).toUpperCase());
+      trackedField = FIELD.valueOf(cmd.getOptionValue(FIELD_OPTS_ARG).toUpperCase());
     } catch(Exception exp) {
       logger.error(exp.getMessage());
       System.err.println(exp.getMessage());

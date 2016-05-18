@@ -45,7 +45,7 @@ import edu.cmu.sv.modelinference.common.parser.SequentialLogReader;
 public class AREventChartHandler implements LogHandler<ValueTrackerProducer<?, DataPointCollection, ?>>{
   
   private static final Logger logger = LoggerFactory.getLogger(AREventChartHandler.class);
-  private static final String ADD_OPTS_ARG = "a";
+  private static final String FIELD_OPTS_ARG = "field";
   
   private final Options cmdOpts;
   
@@ -65,8 +65,9 @@ public class AREventChartHandler implements LogHandler<ValueTrackerProducer<?, D
   private Options createCmdOptions() {
     Options options = new Options();
     
-    Option addOpts = Option.builder(ADD_OPTS_ARG).argName("Additional options").hasArg()
-          .desc("Additional input type options").build();
+    Option addOpts = Option.builder(FIELD_OPTS_ARG).argName("Field").hasArg()
+    		//Could make a list here based on values of ARValueTracker.FIELD
+          .desc("Field to be tracked, e.g., speed, alt").build(); 
    
     options.addOption(addOpts);
     return options;
@@ -89,10 +90,10 @@ public class AREventChartHandler implements LogHandler<ValueTrackerProducer<?, D
     }
     ARValueTracker.FIELD trackedFieldAR =null;
     try {
-      trackedFieldAR = ARValueTracker.FIELD.valueOf(cmd.getOptionValue(ADD_OPTS_ARG).toUpperCase());
+      trackedFieldAR = ARValueTracker.FIELD.valueOf(cmd.getOptionValue(FIELD_OPTS_ARG).toUpperCase());
     } catch(Exception e) {
       logger.error(e.getMessage());
-      logger.error("Must be supplied a field to be tracked (e.g., pos_x) to additional arg option");
+      logger.error("Must be supplied a field to be tracked (e.g., pos_x) to [" + FIELD_OPTS_ARG + "] arg option");
       System.exit(-1);
     }
     
