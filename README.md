@@ -2,11 +2,30 @@
 `Log2Model` is a framework for reasoning on behaviors in log files.
 
 ## Installation 
-Install prism (can be downloaded here: [PRISM Website](http://www.prismmodelchecker.org/download.php)). Copy prism.jar (located in the `prism/lib` folder) into the `lib` folder.
 
-Download [grappa](http://www2.research.att.com/~john/Grappa/grappa.tgz) (for prettyprinting), and copy the jar into the `lib` folder.
-Install [JUppaal](https://github.com/ksluckow/JUppaal) (for translation to TA), and copy the jar into the `lib` folder.
+### PRISM
+Install prism (can be downloaded here: [PRISM Website](http://www.prismmodelchecker.org/download.php)). Unpack the tar and install `prism.jar`:
 
+```bash
+$ cd /path/to/prism
+$ cd lib
+$ mvn install:install-file -Dfile=prism.jar -DgroupId=prism -DartifactId=prismlib -Dversion=4.3 -Dpackaging=jar
+```
+
+Replace the version name `4.3` in `-Dversion` with the one you downloaded. `Log2Model` currently depends on `4.3+`.
+
+
+### JUppaal
+Install [JUppaal](https://github.com/ksluckow/juppaal) (for translation to TA):
+```bash
+$ git clone https://github.com/ksluckow/juppaal
+$ cd juppaal
+$ gradle install
+```
+
+You should now be ready to install `Log2Model`.
+
+### Log2Model
 If you don't have Gradle installed, use the supplied Gradle wrapper scripts `gradlew` (Linux/Mac) and `gradlew.bat` (Windows) in the following.
 
 To build `Log2model`:
