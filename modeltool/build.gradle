@@ -3,7 +3,6 @@ dependencies {
      compile group: 'com.google.guava', name: 'guava', version:'19.0'
      compile group: 'commons-cli', name: 'commons-cli', version:'1.3'
 
-     compile 'att:grappa:1.2'
      compile 'dk.aau.cs.uppaal:juppaal:1.0.0'
      compile 'prism:prismlib:4.3+'
 }
