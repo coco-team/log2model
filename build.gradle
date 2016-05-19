@@ -5,11 +5,15 @@ subprojects {
     repositories {
         mavenLocal()
         mavenCentral()
+        maven {
+            url "http://eulergui.sourceforge.net/maven2/"
+        }
     }
 
     dependencies {
         compile 'org.slf4j:slf4j-api:1.7.21'
         compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.5'
         compile 'org.apache.logging.log4j:log4j-core:2.5'
+        compile 'att:grappa:1.2'
     }
 }
