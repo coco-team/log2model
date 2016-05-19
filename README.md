@@ -51,7 +51,7 @@ $ ./runner.sh -input examples/safetugs_ex.log -type st -tool model -m prism -o .
 This will generate the `PRISM` file `model.prism`. You can optionally leave out the `-v` switch to not produce a visualization of the DTMC. The prettyprint will be output in the same destionation as the argument of the `-o` switch. The `dim` option (SafeTugs specific) specifies the dimensions of the grid projected on top of the airfield.
 
 In addition, `Log2Model` has a number of additional tools:
-To perform state mining and visualize the results:
+To perform event detection and visualize the results:
 ```bash
 $ ./runner.sh -input examples/safetugs_ex.log -type st -tool eventclass -field speed -flightname FL1
 ```
@@ -82,7 +82,7 @@ Here `data.csv`is a file with comma-separated x and y values.
 `STCoordOutputter` can generate the `data.csv` for `animator.py`
 
 ## Implementation
-`Log2model` can be considered a framework for processing log files and has many extension points which will be explained here. In addition, it comes with a number of log processors for e.g. generating models, visualization, data mining etc.
+`Log2model` can be considered a framework for processing log files and has many extension points which will be explained here. In addition, it comes with a number of log processors for e.g. generating models, visualization, event detection etc.
 It is likely that much of what is explained here will change in the future.
 Currently `Log2model` has support for the SafeTugs and AutoResolver log formats. The latter does not originally log to files so an extension has been made to AutoResolver which does this based on the trajectory data.
 
@@ -95,5 +95,5 @@ The important interfaces and extension points of `Log2model` are:
 Generating models for PRISM and UPPAAL is still under development. Previously there was a translation that worked, but required a user-supplied state definition. The infrastructure is currently being updated with a component that can find likely events in the time series data. These can later be regarded as states.
 The model generated for a log is essentially a finite state machine with labels on transitions. The labels describe the frequency with which a behavior has transitioned from the source to the destination state. These frequencies can be used for computing probabilities---essentially the model describes a DTMC. The DTMC is described in terms of an IR that can further be translated to PRISM and (experimentally) to UPPAAL. The model can also be visualized by a translation to DOT. If the model is translated to the reactive modules formalism of PRISM, PCTL properties can be checked. There is a prototype functionality for transparently invoking the model checkers, i.e. the input to `log2model` is simply the log and a properties file. `Log2model` can then relay back the results by acting as a proxy to the model checker.
 
-`Log2model` has functionality for mining likely events in the time series. It does this by using a combination of feature extraction, prediction model generation, and classification: The event detection method is based on computing a prediction model of the rate of change of the log field in question. Then it computes upper and lower control limits based on a making a Gaussian fit on a moving average of the rate of change feature. If the actual (observed) value exceeds the range describe by the limits, it signals a likely event has happened.
+`Log2model` has functionality for finding likely events in the time series. It does this by using a combination of feature extraction, prediction model generation, and classification: The event detection method is based on computing a prediction model of the rate of change of the log field in question. Then it computes upper and lower control limits based on a making a Gaussian fit on a moving average of the rate of change feature. If the actual (observed) value exceeds the range describe by the limits, it signals a likely event has happened.
 When all events have been found, the average feature is calculated for each time range to which the event applies. The average features are then used with k-means clustering to find partitions of events that are ''similar''. Each partition constitutes an abstract state that can then be used in the above mentioned model generation. 
